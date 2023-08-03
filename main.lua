@@ -127,30 +127,58 @@ function love.update()
     targetPosition.x, targetPosition.y = love.mouse.getPosition()
 end
 
+local function drawMenu()
+    love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
+    love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+end
+
+local function drawGame()
+    Consts.gui.rect:draw(0.5, 0.5, 0.5)
+
+    for i=1,Consts.livesMax do
+        local x = 0
+        if i <= lives then
+            x = Consts.heartSize
+        end
+        local quad = love.graphics.newQuad(x, 0, Consts.heartSize, Consts.heartSize, images.heart)
+        local position = Vector2(80 + (i - 1) * (5 + Consts.heartSize), Consts.heartY)
+        love.graphics.draw(images.heart, quad, position.x, position.y)
+    end
+
+    love.graphics.draw(
+        texts.score, 
+        Consts.screenWidth - texts.score:getWidth() - Consts.offset, 
+        Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
+    )
+end
+
+local function drawLost()
+    love.graphics.draw(
+        texts.lostTitle,
+        (Consts.screenWidth - texts.lostTitle:getWidth()) / 2,
+        Consts.screenHeight / 4 - texts.lostTitle:getHeight() / 2
+    )
+    love.graphics.draw(
+        texts.lostScore,
+        (Consts.screenWidth - texts.lostScore:getWidth()) / 2,
+        (Consts.screenHeight - texts.lostScore:getHeight()) / 2
+    )
+    love.graphics.draw(
+        texts.sub,
+        (Consts.screenWidth - texts.sub:getWidth()) / 2,
+        Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2
+    )
+end
+
 function love.draw()
     love.graphics.draw(images.planet)
-    
+
     if state == "menu" then
-        love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
-        love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+        drawMenu()
     elseif state == "game" then
-        Consts.gui.rect:draw(0.5, 0.5, 0.5)
-
-        for i=1,Consts.livesMax do
-            local x = 0
-            if i <= lives then
-                x = Consts.heartSize
-            end
-            local quad = love.graphics.newQuad(x, 0, Consts.heartSize, Consts.heartSize, images.heart)
-            local position = Vector2(80 + (i - 1) * (5 + Consts.heartSize), Consts.heartY)
-            love.graphics.draw(images.heart, quad, position.x, position.y)
-        end
-
-        love.graphics.draw(texts.score, Consts.screenWidth - texts.score:getWidth() - Consts.offset, Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2)
+        drawGame()
     elseif state == "lost" then
-        love.graphics.draw(texts.lostTitle, (Consts.screenWidth - texts.lostTitle:getWidth()) / 2, Consts.screenHeight / 4 - texts.lostTitle:getHeight() / 2)
-        love.graphics.draw(texts.lostScore, (Consts.screenWidth - texts.lostScore:getWidth()) / 2, (Consts.screenHeight - texts.lostScore:getHeight()) / 2)
-        love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+        drawLost()
     end
 
     love.graphics.draw(images.target, targetPosition.x - images.target:getWidth() / 2, targetPosition.y - images.target:getHeight() / 2)
