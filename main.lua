@@ -44,12 +44,16 @@ function love.mousepressed()
     end
 end
 
+local function launchGame()
+    state = "game"
+    sounds.start:play()
+    music:play()
+end
+
 function love.keypressed(key)
     if state == "menu" then
         if key == "space" then
-            state = "game"
-            sounds.start:play()
-            music:play()
+            launchGame()
         elseif key == "escape" then
             love.event.quit()
         end
@@ -60,9 +64,7 @@ function love.keypressed(key)
         end
     elseif state == "lost" then
         if key == "space" then
-            state = "game"
-            sounds.start:play()
-            music:play()
+            launchGame()
         end
     end
 end
