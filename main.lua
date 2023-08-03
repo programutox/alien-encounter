@@ -3,6 +3,9 @@ Consts = require("consts")
 
 local images = {}
 local sounds = {}
+local texts = {}
+
+local state = "menu"
 
 local function loadImages()
     for _, filepath in ipairs(love.filesystem.getDirectoryItems("assets/img/")) do
@@ -20,28 +23,53 @@ end
 
 function love.load()
     local font = love.graphics.setNewFont(20)
-    MenuSubText = love.graphics.newText(font, "Press [space] to start")
+    local bigFont = love.graphics.setNewFont(50)
+    texts.lost = love.graphics.newText(bigFont, "You lost!")
+    texts.sub = love.graphics.newText(font, "Press [space] to start")
 
     loadImages()
     loadSounds()
 end
 
 function love.mousepressed()
-    sounds.shoot:play()
-end
-
-function love.keypressed(key)
-    if key == "space" then
-        sounds.start:play()
+    if state == "game" then
+        state = "lost"
+        sounds.shoot:play()
     end
 end
 
--- function love.update()
-
--- end
+function love.keypressed(key)
+    if state == "menu" then
+        if key == "space" then
+            state = "game"
+            sounds.start:play()
+        elseif key == "escape" then
+            love.event.quit(0)
+        end
+    elseif state == "game" then
+        if key == "escape" then
+            state = "menu"
+        end
+    elseif state == "lost" then
+        if key == "space" then
+            state = "game"
+            sounds.start:play()
+        end
+    end
+end
 
 function love.draw()
     love.graphics.draw(images.planet)
-    love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
-    love.graphics.draw(MenuSubText, (Consts.screenWidth - MenuSubText:getWidth()) / 2, Consts.screenHeight * 0.75 - MenuSubText:getHeight() / 2)
+    
+    if state == "menu" then
+        love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
+        love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+    elseif state == "lost" then
+        love.graphics.draw(texts.lost, (Consts.screenWidth - texts.lost:getWidth()) / 2, Consts.screenHeight / 4 - texts.lost:getHeight() / 2)
+        love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+    end
+end
+
+function love.quit()
+    -- Write highscore
 end
