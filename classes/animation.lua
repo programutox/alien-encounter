@@ -1,5 +1,5 @@
-require("clock")
 require("rectangle")
+require("clock")
 
 Animation = Object:extend()
 

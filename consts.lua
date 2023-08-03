@@ -1,8 +1,7 @@
 Object = require("lib.classic")
 require("classes.color")
-require("classes.vector2")
-require("classes.rectangle")
 require("classes.animationinfo")
+require("classes.rectangle")
 
 local function protect(table)
     return setmetatable({}, {
@@ -72,8 +71,10 @@ c.screenHeight = c.offset + c.alien.perColumns * (c.alien.height + c.offset) + c
 
 c.gui.rect = Rectangle(0, c.screenHeight - c.gui.height, c.screenWidth, c.gui.height)
 
-c.gui.alienPosition = Vector2(c.offset, c.gui.rect.y + c.offset / 2)
-c.gui.littleAlienPosition = Vector2(c.offset * 2, c.gui.rect.y + (c.offset + c.alien.height - c.littleAlien.height) / 2)
+c.gui.alienX = c.offset
+c.gui.alienY = c.gui.rect.y + c.offset / 2
+c.gui.littleAlienX = c.offset * 2
+c.gui.littleAlienY = c.gui.rect.y + (c.offset + c.alien.height - c.littleAlien.height) / 2
 c.gui.bgTimeBar = Rectangle(0, c.gui.rect.y, c.screenWidth, 5)
 c.heartY = c.gui.rect.y + (c.gui.height - c.heartSize) / 2
 
@@ -113,5 +114,9 @@ c.animationInfo.explosion = AnimationInfo(
 )
 
 c.reloadDuration = c.animationInfo.death.frameDuration
+
+c.buttonX = c.screenWidth - c.buttonSize - c.offset
+c.soundButtonY = c.screenHeight - (c.buttonSize + c.offset) * 2
+c.musicButtonY = c.screenHeight - (c.buttonSize + c.offset)
 
 return protect(c)

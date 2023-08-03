@@ -1,4 +1,5 @@
 Consts = require("consts")
+require("classes.button")
 
 local images = {}
 local sounds = {}
@@ -7,11 +8,20 @@ local music = nil
 
 local state = "menu"
 local lives = Consts.livesMax
-local targetPosition = Vector2(0, 0)
+local targetX, targetY = 0, 0
 
 local score = 0
 local highscore = 0
 local startHighscore = 0
+
+local soundButton = Button(Consts.buttonX, Consts.soundButtonY)
+local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
+
+local function playSound(sound)
+    if soundButton.on then
+        sound:play()
+    end
+end
 
 local function loadHighscore()
     local file = io.open(Consts.highscoreFilePath)
@@ -71,7 +81,15 @@ function love.load()
 end
 
 function love.mousepressed()
-    if state == "game" then
+    if state == "menu" then
+        if soundButton:isHovered() then
+            soundButton:toggle()
+            playSound(sounds.press)
+        elseif musicButton:isHovered() then
+            musicButton:toggle()
+            playSound(sounds.press)
+        end
+    elseif state == "game" then
         score = score + 1
         texts.score:set(string.format("%02d/%02d", score, highscore))
     end
@@ -81,8 +99,10 @@ local function launchGame()
     state = "game"
     score = 0
     texts.score:set(string.format("%02d/%02d", score, highscore))
-    sounds.start:play()
-    music:play()
+    playSound(sounds.start)
+    if musicButton.on then
+        music:play()
+    end
 end
 
 local function launchLost()
@@ -97,8 +117,10 @@ local function launchLost()
     end
 
     texts.lostScore:set(text)
-    music:stop()
-    sounds.lost:play()
+    if musicButton.on then
+        music:stop()
+    end
+    playSound(sounds.lost)
 end
 
 function love.keypressed(key)
@@ -111,7 +133,9 @@ function love.keypressed(key)
     elseif state == "game" then
         if key == "escape" then
             state = "menu"
-            music:stop()
+            if musicButton.on then
+                music:stop()
+            end
         elseif key == "space" then
             launchLost()
         end
@@ -123,25 +147,28 @@ function love.keypressed(key)
 end
 
 function love.update()
-    targetPosition.x, targetPosition.y = love.mouse.getPosition()
+    targetX, targetY = love.mouse.getPosition()
 end
 
 local function drawMenu()
     love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
     love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
+    
+    soundButton:draw(images.soundOn, images.soundOff)
+    musicButton:draw(images.musicOn, images.musicOff)
 end
 
 local function drawGame()
     Consts.gui.rect:draw(0.5, 0.5, 0.5)
 
     for i=1,Consts.livesMax do
-        local x = 0
+        local quadX = 0
         if i <= lives then
-            x = Consts.heartSize
+            quadX = Consts.heartSize
         end
-        local quad = love.graphics.newQuad(x, 0, Consts.heartSize, Consts.heartSize, images.heart)
-        local position = Vector2(80 + (i - 1) * (5 + Consts.heartSize), Consts.heartY)
-        love.graphics.draw(images.heart, quad, position.x, position.y)
+        local quad = love.graphics.newQuad(quadX, 0, Consts.heartSize, Consts.heartSize, images.heart)
+        local x, y = 80 + (i - 1) * (5 + Consts.heartSize), Consts.heartY
+        love.graphics.draw(images.heart, quad, x, y)
     end
 
     love.graphics.draw(
@@ -180,7 +207,7 @@ function love.draw()
         drawLost()
     end
 
-    love.graphics.draw(images.target, targetPosition.x - images.target:getWidth() / 2, targetPosition.y - images.target:getHeight() / 2)
+    love.graphics.draw(images.target, targetX - images.target:getWidth() / 2, targetY - images.target:getHeight() / 2)
 end
 
 function love.quit()
