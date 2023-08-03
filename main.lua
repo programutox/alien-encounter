@@ -4,6 +4,7 @@ Consts = require("consts")
 local images = {}
 local sounds = {}
 local texts = {}
+local music
 
 local state = "menu"
 local lives = Consts.livesMax
@@ -29,6 +30,8 @@ function love.load()
     texts.lost = love.graphics.newText(bigFont, "You lost!")
     texts.sub = love.graphics.newText(font, "Press [space] to start")
 
+    music = love.audio.newSource("assets/mus/alien_swamp.ogg", "stream")
+
     loadImages()
     loadSounds()
 end
@@ -36,7 +39,8 @@ end
 function love.mousepressed()
     if state == "game" then
         state = "lost"
-        sounds.shoot:play()
+        music:stop()
+        sounds.lost:play()
     end
 end
 
@@ -45,17 +49,20 @@ function love.keypressed(key)
         if key == "space" then
             state = "game"
             sounds.start:play()
+            music:play()
         elseif key == "escape" then
             love.event.quit()
         end
     elseif state == "game" then
         if key == "escape" then
             state = "menu"
+            music:stop()
         end
     elseif state == "lost" then
         if key == "space" then
             state = "game"
             sounds.start:play()
+            music:play()
         end
     end
 end
