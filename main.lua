@@ -1,4 +1,3 @@
-Object = require("lib.classic")
 Consts = require("consts")
 
 local images = {}
