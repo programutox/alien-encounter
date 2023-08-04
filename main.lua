@@ -1,4 +1,5 @@
 Consts = require("consts")
+require("classes.animation")
 require("classes.button")
 
 local images = {}
@@ -13,6 +14,10 @@ local targetX, targetY = 0, 0
 local score = 0
 local highscore = 0
 local startHighscore = 0
+
+local explosionAnimation = Animation(Consts.animationInfo.explosion)
+local explosionX, explosionY = 0, 0
+local canDrawExplosion = false
 
 local soundButton = Button(Consts.buttonX, Consts.soundButtonY)
 local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
@@ -33,7 +38,6 @@ local function loadHighscore()
     if content ~= nil then
         highscore = content
         startHighscore = content
-        print(startHighscore)
     end
 
     file:close()
@@ -90,8 +94,15 @@ function love.mousepressed()
             playSound(sounds.press)
         end
     elseif state == "game" then
+        if sounds.shoot:isPlaying() then
+            return
+        end
         score = score + 1
+        explosionX = targetX - Consts.explosionSize / 2
+        explosionY = targetY - Consts.explosionSize / 2
+        explosionAnimation:restart()
         texts.score:set(string.format("%02d/%02d", score, highscore))
+        playSound(sounds.shoot)
     end
 end
 
@@ -148,6 +159,12 @@ end
 
 function love.update()
     targetX, targetY = love.mouse.getPosition()
+    if state == "game" then
+        explosionAnimation:update()
+        if not canDrawExplosion and explosionAnimation:isOver() then
+            canDrawExplosion = true
+        end
+    end
 end
 
 local function drawMenu()
@@ -171,8 +188,12 @@ local function drawGame()
         love.graphics.draw(images.heart, quad, x, y)
     end
 
+    if canDrawExplosion and not explosionAnimation:isOver() then
+        love.graphics.draw(images.explosion, explosionAnimation:getCurrentFrame(), explosionX, explosionY)
+    end
+
     love.graphics.draw(
-        texts.score, 
+        texts.score,
         Consts.screenWidth - texts.score:getWidth() - Consts.offset, 
         Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
     )
