@@ -1,5 +1,10 @@
 Color = Object:extend()
 
+function RandomColor()
+    local index = math.random(1, #Consts.colors)
+    return Consts.colors[index]
+end
+
 function Color:new(r, g, b, a)
     self.r = r
     self.g = g

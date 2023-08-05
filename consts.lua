@@ -62,11 +62,11 @@ local c = {
 c.alien.imageWidth = 3 * c.alien.frameWidth
 c.alien.imageHeight = 4 * c.alien.frameHeight
 c.alien.headcount = c.alien.perRows * c.alien.perColumns
-c.alien.width = c.alien.frameWidth * c.alien.scale
+c.alien.width = math.floor(c.alien.frameWidth * c.alien.scale)
 c.alien.height = math.floor(c.alien.frameHeight * c.alien.scale)
 
-c.littleAlien.width = c.alien.frameWidth * c.littleAlien.scale
-c.littleAlien.height = c.alien.frameHeight * c.littleAlien.scale
+c.littleAlien.width = math.floor(c.alien.frameWidth * c.littleAlien.scale)
+c.littleAlien.height = math.floor(c.alien.frameHeight * c.littleAlien.scale)
 
 c.gui.height = c.offset + c.alien.height
 c.screenWidth = c.offset + c.alien.perRows * (c.alien.width + c.offset)
@@ -74,12 +74,13 @@ c.screenHeight = c.offset + c.alien.perColumns * (c.alien.height + c.offset) + c
 
 c.gui.rect = Rectangle(0, c.screenHeight - c.gui.height, c.screenWidth, c.gui.height)
 
+c.littleAlienOffsetX = math.floor((c.alien.width - c.littleAlien.width) / 2)
+c.littleAlienOffsetY = math.floor((c.alien.height - c.littleAlien.height) / 2)
+
 c.gui.alienX = c.offset
 c.gui.alienY = c.gui.rect.y + c.offset / 2
 c.gui.littleAlienX = c.offset * 2
-c.gui.littleAlienY = c.gui.rect.y + (c.offset + c.alien.height - c.littleAlien.height) / 2
-c.gui.littleAlienOffsetX = (c.alien.width - c.littleAlien.width) / 2
-c.gui.littleAlienOffsetY = (c.alien.height - c.littleAlien.height) / 2
+c.gui.littleAlienY = math.floor(c.gui.rect.y + (c.offset + c.alien.height - c.littleAlien.height) / 2)
 c.gui.bgTimeBar = Rectangle(0, c.gui.rect.y, c.screenWidth, 5)
 c.heartY = c.gui.rect.y + (c.gui.height - c.heartSize) / 2
 

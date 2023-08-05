@@ -2,12 +2,13 @@ Consts = require("consts")
 require("classes.animation")
 require("classes.button")
 require("classes.clock")
-require("classes.alien")
+-- require("classes.alien")
+require("classes.group")
 
 local images = {}
 local sounds = {}
 local texts = {}
-local music = nil
+local music
 
 local state = "menu"
 local targetX, targetY = 0, 0
@@ -29,7 +30,8 @@ local heartsQuad = {}
 local clock = Clock()
 
 -- TODO Replace that alien variable with the group
-local alien = nil
+-- local alien
+local group
 
 local function playSound(sound)
     if soundButton.on then
@@ -102,11 +104,6 @@ function love.load()
 
     loadImages()
     loadSounds()
-
-    -- while #heartsQuad < Consts.livesMax do
-    --     local quad = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
-    --     table.insert(heartsQuad, quad)
-    -- end
 end
 
 local function menuMousePressed()
@@ -148,7 +145,8 @@ local function launchGame()
     state = "game"
     score = 0
     resetLives()
-    alien = Alien:newBig(0, Colors.black, false, 1)
+    -- alien = Alien:newBig(0, Colors.black, false, 1)
+    group = Group(0)
     texts.score:set(string.format("%02d/%02d", score, highscore))
     playSound(sounds.start)
     if musicButton.on then
@@ -158,7 +156,8 @@ end
 
 local function launchLost()
     state = "lost"
-    alien = nil
+    -- alien = nil
+    group = nil
 
     local text = ""
     if score > highscore then
@@ -185,7 +184,8 @@ function love.keypressed(key)
     elseif state == "game" then
         if key == "escape" then
             state = "menu"
-            alien = nil
+            -- alien = nil
+            group = nil
             if musicButton.on then
                 music:stop()
             end
@@ -203,10 +203,11 @@ function love.keypressed(key)
     end
 end
 
-function love.update()
+function love.update(dt)
     targetX, targetY = love.mouse.getPosition()
     if state == "game" then
-        alien:update()
+        -- alien:update()
+        group:update(dt)
         explosionAnimation:update()
         if not canDrawExplosion and explosionAnimation:isOver() then
             canDrawExplosion = true
@@ -225,8 +226,10 @@ end
 local function drawGame()
     Consts.gui.rect:draw(0.5, 0.5, 0.5)
 
-    alien:draw(images)
-    alien:drawGui(images)
+    -- alien:draw(images)
+    -- alien:drawGui(images)
+    group:draw(images)
+    group:drawGui(images)
 
     for i, quad in ipairs(heartsQuad) do
         local x = 80 + (i - 1) * (5 + Consts.heartSize)

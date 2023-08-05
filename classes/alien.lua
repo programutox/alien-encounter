@@ -48,18 +48,19 @@ function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, rou
     self.speed = speed
 end
 
-function Alien:newBig(i, criminalColor, moving, round)
-    local x = Consts.offset + (i % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
-    local y = Consts.offset + (i / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset)
+function NewBigAlien(i, criminalColor, moving, round)
+    -- consts.offset + (i % consts.alien_per_rows) * (consts.alien_width + consts.offset)
+    local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
+    local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset)
     local rect = Rectangle(x, y, Consts.alien.width, Consts.alien.height)
     return Alien(i, criminalColor, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.alien.scale, Consts.alien.speed, round)
 end
 
-function Alien:newLittle(i, criminalColor, moving, round)
-    local x = Consts.offset + (i % Consts.alien.perRows) + Consts.gui.littleAlienOffsetX
-    local y = Consts.offset + (i / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset) + Consts.gui.littleAlienOffsetY
+function NewLittleAlien(i, criminalColor, moving, round)
+    local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset) + Consts.littleAlienOffsetX
+    local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset) + Consts.littleAlienOffsetY
     local rect = Rectangle(x, y, Consts.littleAlien.width, Consts.littleAlien.height)
-    return Rectangle(i, criminalColor, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.littleAlien.scale, Consts.littleAlien.speed, round)
+    return Alien(i, criminalColor, moving, rect, Consts.gui.littleAlienX, Consts.gui.littleAlienY, Consts.littleAlien.scale, Consts.littleAlien.speed, round)
 end
 
 local function pointInRect(x, y, rect)

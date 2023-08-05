@@ -5,14 +5,9 @@ function AccessoryColor:new(reversable, optionalColor)
     self.optionalColor = optionalColor
 end
 
-local function randomColor()
-    local index = math.random(1, #Consts.colors)
-    return Consts.colors[index]
-end
-
 local function newOptionalColor()
     if math.random(1, 3) == 1 then
-        return randomColor()
+        return RandomColor()
     else
         return nil
     end
@@ -60,22 +55,27 @@ function AccessoriesColor:createAtLeastOneAccessory()
     if not key then
         error("Tried to get a key map from an invalid index", 2)
     end
-    self.colors[key] = AccessoryColor(self.colors[key].reversable, randomColor())
+    self.colors[key] = AccessoryColor(self.colors[key].reversable, RandomColor())
 end
 
 function AccessoriesColor:adapt(alienColor)
-    for _, accessoryColor in pairs(self.colors) do
-        local color = accessoryColor
-        while color:equals(alienColor) do
-            print()
+    for i, accessoryColor in pairs(self.colors) do
+        if not accessoryColor then
+            goto continue
         end
+
+        while accessoryColor:equals(alienColor) do
+            accessoryColor = RandomColor()
+        end
+        self.colors[i] = accessoryColor
+        ::continue::
     end
 end
 
 function AccessoriesColor:change(alienColor)
     for _, accessoryColor in pairs(self.colors) do
         if accessoryColor.optionalColor then
-            accessoryColor.optionalColor = randomColor()
+            accessoryColor.optionalColor = RandomColor()
         end
     end
     self:adapt(alienColor)
