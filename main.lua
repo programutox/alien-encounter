@@ -15,6 +15,7 @@ local targetX, targetY = 0, 0
 local score = 0
 local highscore = 0
 local startHighscore = 0
+local lives = Consts.livesMax
 
 local explosionAnimation = Animation(Consts.animationInfo.explosion)
 local explosionX, explosionY = 0, 0
@@ -75,6 +76,13 @@ local function loadSounds()
     end
 end
 
+local function resetLives()
+    lives = Consts.livesMax
+    for i = 1, lives do
+        heartsQuad[i] = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
+    end
+end
+
 function love.load()
     -- If you don't seed, you get the same results over and over
     math.randomseed(os.time())
@@ -95,10 +103,10 @@ function love.load()
     loadImages()
     loadSounds()
 
-    while #heartsQuad < Consts.livesMax do
-        local quad = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
-        table.insert(heartsQuad, quad)
-    end
+    -- while #heartsQuad < Consts.livesMax do
+    --     local quad = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
+    --     table.insert(heartsQuad, quad)
+    -- end
 end
 
 local function menuMousePressed()
@@ -139,6 +147,7 @@ end
 local function launchGame()
     state = "game"
     score = 0
+    resetLives()
     alien = Alien:newBig(0, Colors.black, false, 1)
     texts.score:set(string.format("%02d/%02d", score, highscore))
     playSound(sounds.start)
@@ -181,7 +190,11 @@ function love.keypressed(key)
                 music:stop()
             end
         elseif key == "space" then
-            launchLost()
+            heartsQuad[lives] = love.graphics.newQuad(0, 0, Consts.heartSize, Consts.heartSize, images.heart)
+            lives = lives - 1
+            if lives == 0 then
+                launchLost()
+            end
         end
     elseif state == "lost" then
         if key == "space" then
@@ -204,7 +217,7 @@ end
 local function drawMenu()
     love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
     love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
-    
+
     soundButton:draw(images.soundOn, images.soundOff)
     musicButton:draw(images.musicOn, images.musicOff)
 end
