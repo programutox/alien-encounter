@@ -101,30 +101,38 @@ function love.load()
     end
 end
 
+local function menuMousePressed()
+    if soundButton:isHovered() then
+        soundButton:toggle()
+        playSound(sounds.press)
+    elseif musicButton:isHovered() then
+        musicButton:toggle()
+        playSound(sounds.press)
+    end
+end
+
+local function gameMousePressed()
+    if clock:elapsedSeconds() < Consts.reloadDuration then
+        return
+    end
+    score = score + 1
+    explosionX = targetX - Consts.explosionSize / 2
+    explosionY = targetY - Consts.explosionSize / 2
+    explosionAnimation:restart()
+    clock:restart()
+    texts.score:set(string.format("%02d/%02d", score, highscore))
+    playSound(sounds.shoot)
+end
+
 function love.mousepressed(_, _, button, _, _)
     if button ~= Consts.leftClick then
         return
     end
 
     if state == "menu" then
-        if soundButton:isHovered() then
-            soundButton:toggle()
-            playSound(sounds.press)
-        elseif musicButton:isHovered() then
-            musicButton:toggle()
-            playSound(sounds.press)
-        end
+        menuMousePressed()
     elseif state == "game" then
-        if clock:elapsedSeconds() < Consts.reloadDuration then
-            return
-        end
-        score = score + 1
-        explosionX = targetX - Consts.explosionSize / 2
-        explosionY = targetY - Consts.explosionSize / 2
-        explosionAnimation:restart()
-        clock:restart()
-        texts.score:set(string.format("%02d/%02d", score, highscore))
-        playSound(sounds.shoot)
+        gameMousePressed()
     end
 end
 
