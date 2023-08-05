@@ -41,23 +41,25 @@ local c = {
     borderColor = Color(0, 0, 0, 240),
 
     colors = {
-        Color(220, 20, 60, 255), -- red
-		Color(50, 205, 50, 255), -- green
-		Color(255, 105, 180, 255), -- rose
-		Color(255, 165, 0, 255), -- orange
-		Color(255, 255, 0, 255), -- yellow
-		Color(138, 43, 226, 255), -- purple
-		Color(139, 69, 19, 255), -- brown
-		Color(0, 255, 255, 255), -- cyan
-		Color(0, 0, 255, 255), -- blue
-		Color(0, 0, 0, 255), -- black
-		Color(255, 255, 255, 255), -- white
+        Color(220, 20, 60, 255):normalized(), -- red
+		Color(50, 205, 50, 255):normalized(), -- green
+		Color(255, 105, 180, 255):normalized(), -- rose
+		Color(255, 165, 0, 255):normalized(), -- orange
+		Color(255, 255, 0, 255):normalized(), -- yellow
+		Color(138, 43, 226, 255):normalized(), -- purple
+		Color(139, 69, 19, 255):normalized(), -- brown
+		Color(0, 255, 255, 255):normalized(), -- cyan
+		Color(0, 0, 255, 255):normalized(), -- blue
+		Color(0, 0, 0, 255):normalized(), -- black
+		Color(255, 255, 255, 255):normalized(), -- white
     },
 
     gui = {},
     animationInfo = {},
 }
 
+c.alien.imageWidth = 3 * c.alien.frameWidth
+c.alien.imageHeight = 4 * c.alien.frameHeight
 c.alien.headcount = c.alien.perRows * c.alien.perColumns
 c.alien.width = c.alien.frameWidth * c.alien.scale
 c.alien.height = math.floor(c.alien.frameHeight * c.alien.scale)
@@ -75,6 +77,8 @@ c.gui.alienX = c.offset
 c.gui.alienY = c.gui.rect.y + c.offset / 2
 c.gui.littleAlienX = c.offset * 2
 c.gui.littleAlienY = c.gui.rect.y + (c.offset + c.alien.height - c.littleAlien.height) / 2
+c.gui.littleAlienOffsetX = (c.alien.width - c.littleAlien.width) / 2
+c.gui.littleAlienOffsetY = (c.alien.height - c.littleAlien.height) / 2
 c.gui.bgTimeBar = Rectangle(0, c.gui.rect.y, c.screenWidth, 5)
 c.heartY = c.gui.rect.y + (c.gui.height - c.heartSize) / 2
 
@@ -82,38 +86,48 @@ c.animationInfo.idle = AnimationInfo(
     Rectangle(0, 0, c.alien.frameWidth, c.alien.frameHeight),
     2,
     0.5,
-    true
+    true,
+    c.alien.imageWidth,
+    c.alien.imageHeight
 )
 
 c.animationInfo.move = AnimationInfo(
     Rectangle(0, c.alien.frameHeight, c.alien.frameWidth, c.alien.frameHeight),
     3,
     0.25,
-    true
+    true,
+    c.alien.imageWidth,
+    c.alien.imageHeight
 )
 
 c.animationInfo.death = AnimationInfo(
-    Rectangle(0, c.alien.frameHeight * 2, c.alien.frameWidth, c.alien.frameHeight), 
+    Rectangle(0, c.alien.frameHeight * 2, c.alien.frameWidth, c.alien.frameHeight),
     3,
     0.25,
-    false
+    false,
+    c.alien.imageWidth,
+    c.alien.imageHeight
 )
 
 c.animationInfo.criminalDeath = AnimationInfo(
-    Rectangle(0, c.alien.frameHeight * 2, c.alien.frameWidth, c.alien.frameHeight), 
+    Rectangle(0, c.alien.frameHeight * 2, c.alien.frameWidth, c.alien.frameHeight),
     3,
     0.25,
-    true
+    true,
+    c.alien.imageWidth,
+    c.alien.imageHeight
 )
 
 c.animationInfo.explosion = AnimationInfo(
     Rectangle(0, 0, c.explosionSize, c.explosionSize),
     4,
     c.animationInfo.death.frameDuration / 4,
-    false
+    false,
+    4 * c.explosionSize,
+    4 * c.explosionSize
 )
 
-c.reloadDuration = c.animationInfo.death.frameDuration
+c.reloadDuration = c.animationInfo.death.frameDuration * c.animationInfo.death.framesCount
 
 c.buttonX = c.screenWidth - c.buttonSize - c.offset
 c.soundButtonY = c.screenHeight - (c.buttonSize + c.offset) * 2

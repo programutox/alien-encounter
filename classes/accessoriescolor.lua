@@ -11,7 +11,7 @@ local function randomColor()
 end
 
 local function newOptionalColor()
-    if math.random(1, 10) == 1 then
+    if math.random(1, 3) == 1 then
         return randomColor()
     else
         return nil
@@ -63,11 +63,37 @@ function AccessoriesColor:createAtLeastOneAccessory()
     self.colors[key] = AccessoryColor(self.colors[key].reversable, randomColor())
 end
 
-function AccessoriesColor:adaptColor(alienColor)
+function AccessoriesColor:adapt(alienColor)
     for _, accessoryColor in pairs(self.colors) do
         local color = accessoryColor
         while color:equals(alienColor) do
             print()
+        end
+    end
+end
+
+function AccessoriesColor:change(alienColor)
+    for _, accessoryColor in pairs(self.colors) do
+        if accessoryColor.optionalColor ~= nil then
+            accessoryColor.optionalColor = randomColor()
+        end
+    end
+    self:adapt(alienColor)
+end
+
+function AccessoriesColor:draw(images, quad, orientationX, x, y, scale)
+    for tag, accessoryColor in pairs(self.colors) do
+        if accessoryColor.optionalColor ~= nil then
+            love.graphics.draw(images[tag], quad, x, y, 0, orientationX * scale, scale)
+        end
+    end
+end
+
+function AccessoriesColor:drawGui(images, x, y, scale)
+    for tag, accessoryColor in pairs(self.colors) do
+        if accessoryColor.optionalColor ~= nil then
+            -- TODO: put that quad inside constructor
+            love.graphics.draw(images[tag], Consts.animationInfo.idle.startRect:toQuad(), x, y, 0, scale, scale)
         end
     end
 end

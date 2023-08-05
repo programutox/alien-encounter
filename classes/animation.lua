@@ -7,7 +7,8 @@ function Animation:new(animationInfo)
     local frames = {}
 
     for i = 0, (animationInfo.framesCount - 1) do
-        table.insert(frames, Rectangle(i * startRect.width, startRect.y, startRect.width, startRect.height))
+        local frame = Rectangle(i * startRect.width, startRect.y, startRect.width, startRect.height)
+        table.insert(frames, frame:toQuad(animationInfo.imageWidth, animationInfo.imageHeight))
     end
 
     self.frameDuration = animationInfo.frameDuration
@@ -17,9 +18,8 @@ function Animation:new(animationInfo)
     self.timer = Clock()
 end
 
-function Animation:getCurrentFrame()
-    local frame = self.frames[self.frameIndex]
-    return love.graphics.newQuad(frame.x, frame.y, frame.width, frame.height, frame.width * #self.frames, frame.height * 4)
+function Animation:getCurrentQuad()
+    return self.frames[self.frameIndex]
 end
 
 function Animation:isOver()
@@ -28,11 +28,6 @@ end
 
 function Animation:restart()
     self.timer:restart()
-end
-
-function Animation:reverse()
-    table.sort(self.frames, function (a, b) return a.x > b.x end)
-    self:restart()
 end
 
 function Animation:update()

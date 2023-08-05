@@ -1,6 +1,8 @@
 Consts = require("consts")
 require("classes.animation")
 require("classes.button")
+require("classes.clock")
+require("classes.alien")
 
 local images = {}
 local sounds = {}
@@ -8,7 +10,6 @@ local texts = {}
 local music = nil
 
 local state = "menu"
-local lives = Consts.livesMax
 local targetX, targetY = 0, 0
 
 local score = 0
@@ -21,6 +22,13 @@ local canDrawExplosion = false
 
 local soundButton = Button(Consts.buttonX, Consts.soundButtonY)
 local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
+
+-- Quads are slow when called repeatedly, so it is better to store them in a table
+local heartsQuad = {}
+local clock = Clock()
+
+-- TODO Replace that alien variable with the group
+local alien = nil
 
 local function playSound(sound)
     if soundButton.on then
@@ -69,6 +77,8 @@ end
 
 function love.load()
     loadHighscore()
+    -- If you don't seed, you get the same results over and over
+    math.randomseed(os.time())
 
     local font = love.graphics.setNewFont(20)
     local bigFont = love.graphics.setNewFont(50)
@@ -82,6 +92,11 @@ function love.load()
 
     loadImages()
     loadSounds()
+
+    while #heartsQuad < Consts.livesMax do
+        local quad = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
+        table.insert(heartsQuad, quad)
+    end
 end
 
 function love.mousepressed()
@@ -94,13 +109,14 @@ function love.mousepressed()
             playSound(sounds.press)
         end
     elseif state == "game" then
-        if sounds.shoot:isPlaying() then
+        if clock:elapsedSeconds() < Consts.reloadDuration then
             return
         end
         score = score + 1
         explosionX = targetX - Consts.explosionSize / 2
         explosionY = targetY - Consts.explosionSize / 2
         explosionAnimation:restart()
+        clock:restart()
         texts.score:set(string.format("%02d/%02d", score, highscore))
         playSound(sounds.shoot)
     end
@@ -109,6 +125,7 @@ end
 local function launchGame()
     state = "game"
     score = 0
+    alien = Alien:newBig(0, Colors.black, false, 1)
     texts.score:set(string.format("%02d/%02d", score, highscore))
     playSound(sounds.start)
     if musicButton.on then
@@ -118,6 +135,7 @@ end
 
 local function launchLost()
     state = "lost"
+    alien = nil
 
     local text = ""
     if score > highscore then
@@ -144,6 +162,7 @@ function love.keypressed(key)
     elseif state == "game" then
         if key == "escape" then
             state = "menu"
+            alien = nil
             if musicButton.on then
                 music:stop()
             end
@@ -160,6 +179,7 @@ end
 function love.update()
     targetX, targetY = love.mouse.getPosition()
     if state == "game" then
+        alien:update()
         explosionAnimation:update()
         if not canDrawExplosion and explosionAnimation:isOver() then
             canDrawExplosion = true
@@ -178,18 +198,16 @@ end
 local function drawGame()
     Consts.gui.rect:draw(0.5, 0.5, 0.5)
 
-    for i=1,Consts.livesMax do
-        local quadX = 0
-        if i <= lives then
-            quadX = Consts.heartSize
-        end
-        local quad = love.graphics.newQuad(quadX, 0, Consts.heartSize, Consts.heartSize, images.heart)
-        local x, y = 80 + (i - 1) * (5 + Consts.heartSize), Consts.heartY
-        love.graphics.draw(images.heart, quad, x, y)
+    alien:draw(images)
+    alien:drawGui(images)
+
+    for i, quad in ipairs(heartsQuad) do
+        local x = 80 + (i - 1) * (5 + Consts.heartSize)
+        love.graphics.draw(images.heart, quad, x, Consts.heartY)
     end
 
     if canDrawExplosion and not explosionAnimation:isOver() then
-        love.graphics.draw(images.explosion, explosionAnimation:getCurrentFrame(), explosionX, explosionY)
+        love.graphics.draw(images.explosion, explosionAnimation:getCurrentQuad(), explosionX, explosionY)
     end
 
     love.graphics.draw(
