@@ -76,9 +76,11 @@ local function loadSounds()
 end
 
 function love.load()
-    loadHighscore()
     -- If you don't seed, you get the same results over and over
     math.randomseed(os.time())
+    love.mouse.setVisible(false)
+
+    loadHighscore()
 
     local font = love.graphics.setNewFont(20)
     local bigFont = love.graphics.setNewFont(50)
@@ -99,7 +101,11 @@ function love.load()
     end
 end
 
-function love.mousepressed()
+function love.mousepressed(_, _, button, _, _)
+    if button ~= Consts.leftClick then
+        return
+    end
+
     if state == "menu" then
         if soundButton:isHovered() then
             soundButton:toggle()

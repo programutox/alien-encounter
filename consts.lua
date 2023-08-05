@@ -19,6 +19,7 @@ local c = {
     highscoreFilePath = "assets/data/highscore.bin",
     scoreFontSize = 30,
     offset = 10,
+    leftClick = 1,
 
     alien = {
         perRows = 5,
