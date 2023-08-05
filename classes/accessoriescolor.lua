@@ -57,7 +57,7 @@ end
 function AccessoriesColor:createAtLeastOneAccessory()
     local index = math.random(1, mapLength(self.colors))
     local key = nthKey(self.colors, index)
-    if key == nil then
+    if not key then
         error("Tried to get a key map from an invalid index", 2)
     end
     self.colors[key] = AccessoryColor(self.colors[key].reversable, randomColor())
@@ -74,7 +74,7 @@ end
 
 function AccessoriesColor:change(alienColor)
     for _, accessoryColor in pairs(self.colors) do
-        if accessoryColor.optionalColor ~= nil then
+        if accessoryColor.optionalColor then
             accessoryColor.optionalColor = randomColor()
         end
     end
@@ -83,7 +83,7 @@ end
 
 function AccessoriesColor:draw(images, quad, orientationX, x, y, scale)
     for tag, accessoryColor in pairs(self.colors) do
-        if accessoryColor.optionalColor ~= nil then
+        if accessoryColor.optionalColor then
             love.graphics.draw(images[tag], quad, x, y, 0, orientationX * scale, scale)
         end
     end
@@ -91,7 +91,7 @@ end
 
 function AccessoriesColor:drawGui(images, x, y, scale)
     for tag, accessoryColor in pairs(self.colors) do
-        if accessoryColor.optionalColor ~= nil then
+        if accessoryColor.optionalColor then
             -- TODO: put that quad inside constructor
             love.graphics.draw(images[tag], Consts.animationInfo.idle.startRect:toQuad(), x, y, 0, scale, scale)
         end

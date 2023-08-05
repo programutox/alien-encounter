@@ -38,12 +38,12 @@ end
 
 local function loadHighscore()
     local file = io.open(Consts.highscoreFilePath)
-    if file == nil then
+    if not file then
         return
     end
 
     local content = file:read("*n")
-    if content ~= nil then
+    if content then
         highscore = content
         startHighscore = content
     end
@@ -53,7 +53,7 @@ end
 
 local function saveHighscore()
     local file = io.open(Consts.highscoreFilePath, "w")
-    if file == nil then
+    if not file then
         return
     end
 
