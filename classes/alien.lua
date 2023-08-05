@@ -26,7 +26,7 @@ function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, rou
     if moving and orientationX < 0 then
         -- No need to reverse the animation
         -- Even when flipped, it will be drawn in the correct order, but the origin becomes top right
-        rect.x = rect.x + rect.width
+        rect.x = rect:right()
     end
 
     self.accessoriesColor = AccessoriesColor()
@@ -63,9 +63,7 @@ function Alien:newLittle(i, criminalColor, moving, round)
 end
 
 local function pointInRect(x, y, rect)
-    local rectRight = rect.x + rect.width
-    local rectBottom = rect.y + rect.height
-    return x >= rect.x and x <= rectRight and y >= rect.y and y <= rectBottom
+    return x >= rect.x and x <= rect:right() and y >= rect.y and y <= rect:bottom()
 end
 
 function Alien:isHovered()

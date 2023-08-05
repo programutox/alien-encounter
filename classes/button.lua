@@ -6,9 +6,7 @@ function Button:new(x, y)
 end
 
 local function pointInRect(x, y, rect)
-    local rectRight = rect.x + rect.width
-    local rectBottom = rect.y + rect.height
-    return x >= rect.x and x <= rectRight and y >= rect.y and y <= rectBottom
+    return x >= rect.x and x <= rect:right() and y >= rect.y and y <= rect:bottom()
 end
 
 -- No need to implement isClicked
