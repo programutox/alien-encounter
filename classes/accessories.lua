@@ -34,7 +34,6 @@ function CreateVariantAccessories(other, alienColor)
             result.colors[tag] = AccessoryColor(accessoryColor.reversable, nil)
         end
     end
-    result:adapt(alienColor)
     return result
 end
 
