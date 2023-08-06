@@ -7,6 +7,12 @@ function Rectangle:new(x, y, width, height)
     self.height = height
 end
 
+-- An object is a table, so when you assign it to another variable, a reference is done instead of a copy.
+-- This functions enables to create a copy of the rectangle.
+function CloneRect(rect)
+    return Rectangle(rect.x, rect.y, rect.width, rect.height)
+end
+
 function Rectangle:toQuad(refWidth, refHeight)
     return love.graphics.newQuad(self.x, self.y, self.width, self.height, refWidth, refHeight)
 end

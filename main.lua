@@ -2,7 +2,6 @@ Consts = require("consts")
 require("classes.animation")
 require("classes.button")
 require("classes.clock")
--- require("classes.alien")
 require("classes.group")
 
 local images = {}
@@ -28,10 +27,10 @@ local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
 -- Quads are slow when called repeatedly, so it is better to store them in a table
 local heartsQuad = {}
 local clock = Clock()
+local reloadClock = Clock()
 
--- TODO Replace that alien variable with the group
--- local alien
 local group
+local timeBar = CloneRect(Consts.gui.bgTimeBar)
 
 local function playSound(sound)
     if soundButton.on then
@@ -86,8 +85,6 @@ local function resetLives()
 end
 
 function love.load()
-    -- If you don't seed, you get the same results over and over
-    math.randomseed(os.time())
     love.mouse.setVisible(false)
 
     loadHighscore()
@@ -117,13 +114,14 @@ local function menuMousePressed()
 end
 
 local function gameMousePressed()
-    if clock:elapsedSeconds() < Consts.reloadDuration then
+    if reloadClock:elapsedSeconds() < Consts.reloadDuration then
         return
     end
     score = score + 1
     explosionX = targetX - Consts.explosionSize / 2
     explosionY = targetY - Consts.explosionSize / 2
     explosionAnimation:restart()
+    reloadClock:restart()
     clock:restart()
     texts.score:set(string.format("%02d/%02d", score, highscore))
     playSound(sounds.shoot)
@@ -145,9 +143,9 @@ local function launchGame()
     state = "game"
     score = 0
     resetLives()
-    -- alien = Alien:newBig(0, Colors.black, false, 1)
     group = Group(0)
     texts.score:set(string.format("%02d/%02d", score, highscore))
+    clock:restart()
     playSound(sounds.start)
     if musicButton.on then
         music:play()
@@ -156,7 +154,6 @@ end
 
 local function launchLost()
     state = "lost"
-    -- alien = nil
     group = nil
 
     local text = ""
@@ -184,7 +181,6 @@ function love.keypressed(key)
     elseif state == "game" then
         if key == "escape" then
             state = "menu"
-            -- alien = nil
             group = nil
             if musicButton.on then
                 music:stop()
@@ -205,14 +201,22 @@ end
 
 function love.update(dt)
     targetX, targetY = love.mouse.getPosition()
-    if state == "game" then
-        -- alien:update()
-        group:update(dt)
-        explosionAnimation:update()
-        if not canDrawExplosion and explosionAnimation:isOver() then
-            canDrawExplosion = true
-        end
+    if state ~= "game" then
+        return
     end
+
+    if clock:elapsedSeconds() > Consts.roundDuration then
+        launchLost()
+        return
+    end
+
+    group:update(dt)
+    explosionAnimation:update()
+    if not canDrawExplosion and explosionAnimation:isOver() then
+        canDrawExplosion = true
+    end
+
+    timeBar.width = (1 - clock:elapsedSeconds() / Consts.roundDuration) * Consts.screenWidth
 end
 
 local function drawMenu()
@@ -226,8 +230,6 @@ end
 local function drawGame()
     Consts.gui.rect:draw(0.5, 0.5, 0.5)
 
-    -- alien:draw(images)
-    -- alien:drawGui(images)
     group:draw(images)
     group:drawGui(images)
 
@@ -245,6 +247,9 @@ local function drawGame()
         Consts.screenWidth - texts.score:getWidth() - Consts.offset, 
         Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
     )
+
+    Consts.gui.bgTimeBar:draw(Colors.black.r, Colors.black.g, Colors.black.b)
+    timeBar:draw(Colors.orange.r, Colors.orange.g, Colors.orange.b)
 end
 
 local function drawLost()

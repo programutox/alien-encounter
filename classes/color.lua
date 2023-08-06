@@ -23,5 +23,7 @@ end
 Colors = {
     black = Color(0, 0, 0, 255):normalized(),
     white = Color(255, 255, 255, 255):normalized(),
-    gray = Color(130, 130, 130, 255):normalized()
+    gray = Color(130, 130, 130, 255):normalized(),
+    darkGray = Color(80, 80, 80, 255):normalized(),
+    orange = Color(255, 161, 0, 255):normalized(),
 }

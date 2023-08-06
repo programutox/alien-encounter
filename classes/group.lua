@@ -52,7 +52,7 @@ function Group:reset(addRound)
     if addRound then
         self = Group(self.round + 1)
     else
-        self = Group(self.round + 1)
+        self = Group(self.round)
     end
 end
 
