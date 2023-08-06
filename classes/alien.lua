@@ -92,28 +92,23 @@ function Alien:adaptAccessories()
     self.accessories:adapt(self.color)
 end
 
-function Alien:flipHorizontally()
-    self.orientationX = -self.orientationX
-	self.animation:reverse()
-end
-
 function Alien:updateMovement(dt)
     self.rect.x = self.rect.x + self.orientationX * self.speed * dt
     self.rect.y = self.rect.y + self.orientationY * self.speed * dt
 
-    if self.rect.x < 0 then
+    if self.orientationX < 0 and self.rect.x < self.rect.width then
         self.rect.x = 0
-        self:flipHorizontally()
-    elseif self.rect.x > Consts.screenWidth - self.rect.width then
-        self.rect.x = Consts.screenWidth - self.rect.width
-        self:flipHorizontally()
+        self.orientationX = -self.orientationX
+    elseif self.orientationX > 0 and self.rect.x > Consts.screenWidth - self.rect.width then
+        self.rect.x = Consts.screenWidth
+        self.orientationX = -self.orientationX
     end
 
     if self.rect.y < 0 then
         self.rect.y = 0
         self.orientationY = -self.orientationY
-    elseif self.rect.x > Consts.screenWidth - self.rect.width then
-        self.rect.x = Consts.screenWidth - self.rect.width
+    elseif self.rect.y > Consts.screenHeight - self.rect.height - Consts.gui.height then
+        self.rect.y = Consts.screenHeight - self.rect.height - Consts.gui.height
         self.orientationY = -self.orientationY
     end
 end

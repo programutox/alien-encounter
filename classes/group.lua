@@ -4,9 +4,9 @@ Group = Object:extend()
 
 local function getRandomRoundType(round)
     local roundTypes = { "normal", "size" }
-    if round >= 15 then
-        table.insert(roundTypes, "accessory")
-    end
+    -- if round >= 15 then
+    --     table.insert(roundTypes, "accessory")
+    -- end
     local index = math.random(1, #roundTypes)
     return roundTypes[index]
 end
@@ -19,19 +19,23 @@ local function newAlien(condition, i, criminalColor, moving, round)
     end
 end
 
-function Group:createNormalRound(round)
-    self.criminalColor = RandomColor()
-    self.round = round
-    self.criminalId = math.random(1, Consts.alien.headcount)
-    self.moving = round % 10 >= 5
-    self.limitedRange = not self.moving and round > 10 and math.random(1, 4) == 1
-    self.aliens = {}
-
+function Group:createNormalRound()
     for i=1, Consts.alien.headcount do
-        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColor, self.moving, round)
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColor, self.moving, self.round)
         while i ~= self.criminalId and alien.color:equals(self.criminalColor) do
             alien.color = RandomColor()
         end
+        alien.accessories:adapt(alien.color)
+        table.insert(self.aliens, alien)
+    end
+end
+
+function Group:createSizeRound()
+    local isCriminalLittle = math.random(1, 2) == 1
+    for i=1, Consts.alien.headcount do
+        local isCriminal = i == self.criminalId
+        -- This condition is equivalent to (is_criminal && is_criminal_little) || (!is_criminal && !is_criminal_little)
+        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColor, self.moving, self.round)
         alien.accessories:adapt(alien.color)
         table.insert(self.aliens, alien)
     end
@@ -41,13 +45,22 @@ function Group:new(round, highscore, font)
     self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
     self.highscore = highscore
     self.font = font
+    self.round = round
+
+    self.criminalColor = RandomColor()
+    self.criminalId = math.random(1, Consts.alien.headcount)
+    self.moving = self.round % 10 >= 5
+    self.limitedRange = not self.moving and self.round > 10 and math.random(1, 4) == 1
+    self.aliens = {}
 
     local roundType = getRandomRoundType(round)
-    -- TODO Remove the line below later
-    roundType = "normal"
 
     if roundType == "normal" then
-        self:createNormalRound(round)
+        self:createNormalRound()
+    elseif roundType == "size" then
+        self:createSizeRound()
+    elseif roundType == "accessory" then
+        error("Accessory round not implemented")
     end
 end
 
