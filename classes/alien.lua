@@ -49,7 +49,6 @@ function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, rou
 end
 
 function NewBigAlien(i, criminalColor, moving, round)
-    -- consts.offset + (i % consts.alien_per_rows) * (consts.alien_width + consts.offset)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
     local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset)
     local rect = Rectangle(x, y, Consts.alien.width, Consts.alien.height)
