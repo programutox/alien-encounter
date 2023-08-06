@@ -176,7 +176,7 @@ end
 local function launchGame()
     state = "game"
     resetLives()
-    group = Group(11, highscore, Font)
+    group = Group(0, highscore, Font)
     clock:restart()
     playSound(sounds.start)
     if musicButton.on then

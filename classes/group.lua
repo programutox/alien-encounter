@@ -3,13 +3,12 @@ require("classes.alien")
 Group = Object:extend()
 
 local function getRandomRoundType(round)
-    -- local roundTypes = { "normal", "size" }
-    -- if round >= 15 then
-    --     table.insert(roundTypes, "accessory")
-    -- end
-    -- local index = math.random(1, #roundTypes)
-    -- return roundTypes[index]
-    return "accessory"
+    local roundTypes = { "normal", "size" }
+    if round >= 15 then
+        table.insert(roundTypes, "accessory")
+    end
+    local index = math.random(1, #roundTypes)
+    return roundTypes[index]
 end
 
 local function newAlien(condition, i, criminalColor, moving, round)
@@ -68,10 +67,8 @@ function Group:new(round, highscore, font)
 
     self.criminalColor = RandomColor()
     self.criminalId = math.random(1, Consts.alien.headcount)
-    -- self.moving = self.round % 10 >= 5
-    self.moving = false
-    -- self.limitedRange = not self.moving and self.round > 10 and math.random(1, 5) == 1
-    self.limitedRange = false
+    self.moving = self.round % 10 >= 5
+    self.limitedRange = not self.moving and self.round > 10 and math.random(1, 5) == 1
     self.aliens = {}
 
     local roundType = getRandomRoundType(round)
