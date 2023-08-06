@@ -67,15 +67,15 @@ function Accessories:adapt(alienColor)
         while accessoryColor.optionalColor:equals(alienColor) do
             accessoryColor.optionalColor = RandomColor()
         end
-        self.colors[i].optionalColor = accessoryColor.optionalColor
+        accessoryColor.optionalColor = accessoryColor.optionalColor
         ::continue::
     end
 end
 
 function Accessories:change(alienColor)
-    for tag, accessoryColor in pairs(self.colors) do
+    for _, accessoryColor in pairs(self.colors) do
         if accessoryColor.optionalColor then
-            self.colors[tag].optionalColor = RandomColor()
+            accessoryColor.optionalColor = RandomColor()
         end
     end
     self:adapt(alienColor)

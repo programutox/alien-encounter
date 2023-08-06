@@ -29,6 +29,9 @@ local reloadClock = Clock()
 
 local group
 local timeBar = CloneRect(Consts.gui.bgTimeBar)
+local timeBarWidth = 0
+local criminalShot = false
+local canShoot = true
 
 local function playSound(sound)
     if soundButton.on then
@@ -111,21 +114,55 @@ local function menuMousePressed()
     end
 end
 
-local function gameMousePressed()
-    if reloadClock:elapsedSeconds() < Consts.reloadDuration then
+local function loseLife()
+    heartsQuad[lives] = love.graphics.newQuad(0, 0, Consts.heartSize, Consts.heartSize, images.heart)
+    lives = lives - 1
+end
+
+local function gameMousePressed(mouseX, mouseY)
+    if reloadClock:elapsedSeconds() < Consts.reloadDuration or criminalShot then
         return
     end
-    score = score + 1
+
+    local clickedAliens = group:getClickedAliens()
+    if #clickedAliens == 0 then
+        return
+    end
+    
+    canShoot = false
+    reloadClock:restart()
+    
+    local innocentAliensId = {}
+    for _, alien in ipairs(clickedAliens) do
+        if alien.id ~= group.criminalId then
+            table.insert(innocentAliensId, alien.id)
+        end
+    end
+
+    local isCriminalClicked = #innocentAliensId == #clickedAliens - 1
+    if not isCriminalClicked and #innocentAliensId > 0 then
+        group:triggerDeaths()
+        if lives - 1 > 0 then
+            explosionX = targetX - Consts.explosionSize / 2
+            explosionY = targetY - Consts.explosionSize / 2
+            explosionAnimation:restart()
+            playSound(sounds.shoot)
+        end
+        loseLife()
+        return
+    end
+
+    criminalShot = true
+    group:triggerCriminalDeath()
+    timeBarWidth = (1 - clock:elapsedSeconds() / Consts.roundDuration) * Consts.screenWidth
+    clock:restart()
     explosionX = targetX - Consts.explosionSize / 2
     explosionY = targetY - Consts.explosionSize / 2
     explosionAnimation:restart()
-    reloadClock:restart()
-    clock:restart()
-    texts.score:set(string.format("%02d/%02d", score, highscore))
     playSound(sounds.shoot)
 end
 
-function love.mousepressed(_, _, button, _, _)
+function love.mousepressed(x, y, button, _, _)
     if button ~= Consts.leftClick then
         return
     end
@@ -133,7 +170,7 @@ function love.mousepressed(_, _, button, _, _)
     if state == "menu" then
         menuMousePressed()
     elseif state == "game" then
-        gameMousePressed()
+        gameMousePressed(x, y)
     end
 end
 
@@ -141,7 +178,7 @@ local function launchGame()
     state = "game"
     score = 0
     resetLives()
-    group = Group(11)
+    group = Group(0)
     texts.score:set(string.format("%02d/%02d", score, highscore))
     clock:restart()
     playSound(sounds.start)
@@ -153,6 +190,7 @@ end
 local function launchLost()
     state = "lost"
     group = nil
+    canShoot = true
 
     local text = ""
     if score > highscore then
@@ -183,12 +221,6 @@ function love.keypressed(key)
             if musicButton.on then
                 music:stop()
             end
-        elseif key == "space" then
-            heartsQuad[lives] = love.graphics.newQuad(0, 0, Consts.heartSize, Consts.heartSize, images.heart)
-            lives = lives - 1
-            if lives == 0 then
-                launchLost()
-            end
         end
     elseif state == "lost" then
         if key == "space" then
@@ -203,9 +235,25 @@ function love.update(dt)
         return
     end
 
-    if clock:elapsedSeconds() > Consts.roundDuration then
-        launchLost()
-        return
+    if criminalShot and clock:elapsedSeconds() > Consts.deathAnimationDuration then
+        if (group.round + 1) % 10 == 0 and lives < Consts.livesMax then
+            lives = lives + 1
+            playSound(sounds.heal)
+        end
+        group:reset(true)
+        criminalShot = false
+        clock:restart()
+    end
+
+    if not criminalShot and clock:elapsedSeconds() > Consts.roundDuration then
+        loseLife()
+        group:reset(false)
+        clock:restart()
+        playSound(sounds.lost)
+    end
+
+    if reloadClock:elapsedSeconds() > Consts.reloadDuration then
+        canShoot = true
     end
 
     group:update(dt)
@@ -214,7 +262,14 @@ function love.update(dt)
         canDrawExplosion = true
     end
 
-    timeBar.width = (1 - clock:elapsedSeconds() / Consts.roundDuration) * Consts.screenWidth
+    if not criminalShot then
+        timeBarWidth = (1 - clock:elapsedSeconds() / Consts.roundDuration) * Consts.screenWidth
+        timeBar.width = timeBarWidth
+    end
+
+    if lives == 0 then
+        launchLost()
+    end
 end
 
 local function drawMenu()
@@ -277,7 +332,13 @@ function love.draw()
         drawLost()
     end
 
-    love.graphics.draw(images.target, targetX - images.target:getWidth() / 2, targetY - images.target:getHeight() / 2)
+    if canShoot then
+        love.graphics.draw(images.target, targetX - images.target:getWidth() / 2, targetY - images.target:getHeight() / 2)
+    else
+        love.graphics.setColor(Colors.black:toRgba())
+        love.graphics.draw(images.target, targetX - images.target:getWidth() / 2, targetY - images.target:getHeight() / 2)
+        love.graphics.setColor(Colors.white:toRgba())
+    end
 end
 
 function love.quit()

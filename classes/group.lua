@@ -1,4 +1,3 @@
--- require("classes.color")
 require("classes.alien")
 
 Group = Object:extend()
@@ -50,23 +49,55 @@ end
 
 function Group:reset(addRound)
     if addRound then
-        self = Group(self.round + 1)
+        self:new(self.round + 1)
     else
-        self = Group(self.round)
+        self:new(self.round)
+    end
+end
+
+function Group:getClickedAliens()
+    local result = {}
+    for _, alien in ipairs(self.aliens) do
+        if alien:isHovered() then
+            table.insert(result, alien)
+        end
+    end
+    return result
+end
+
+function Group:triggerDeaths()
+    for _, alien in ipairs(self.aliens) do
+        if alien:isHovered() then
+            alien:changeAnimation(Consts.animationInfo.death)
+        end
+    end
+end
+
+function Group:triggerCriminalDeath()
+    for _, alien in ipairs(self.aliens) do
+        if alien.id == self.criminalId then
+            alien:changeAnimation(Consts.animationInfo.criminalDeath)
+        end
     end
 end
 
 function Group:update(dt)
-    -- TODO Add death
-    for i, _ in ipairs(self.aliens) do
-        self.aliens[i]:update(self.moving, dt)
+    for i, alien in ipairs(self.aliens) do
+        if alien:isDeathAnimationOver() then
+            table.remove(self.aliens, i)
+        else
+            alien:update(self.moving, dt)
+        end
     end
 end
 
 function Group:draw(images)
     love.graphics.draw(images.sun, -images.sun:getWidth() / 2, -images.sun:getHeight() / 2)
-    for i, _ in ipairs(self.aliens) do
-        self.aliens[i]:draw(images)
+
+    --- In for loops like this, since alien is a table, the variable is a reference.
+    --- No need to use self.aliens[i].
+    for _, alien in ipairs(self.aliens) do
+        alien:draw(images)
     end
 
     if not self.limitedRange then
@@ -87,9 +118,9 @@ end
 function Group:drawGui(images)
     Consts.gui.rect:draw(Colors.gray)
 
-    for i, _ in ipairs(self.aliens) do
-        if i == self.criminalId then
-            self.aliens[i]:drawGui(images)
+    for _, alien in ipairs(self.aliens) do
+        if alien.id == self.criminalId then
+            alien:drawGui(images)
             break
         end
     end

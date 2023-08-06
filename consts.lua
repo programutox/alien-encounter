@@ -112,10 +112,10 @@ c.animationInfo.death = AnimationInfo(
 )
 
 c.animationInfo.criminalDeath = AnimationInfo(
-    Rectangle(0, c.alien.frameHeight * 2, c.alien.frameWidth, c.alien.frameHeight),
+    Rectangle(0, c.alien.frameHeight * 3, c.alien.frameWidth, c.alien.frameHeight),
     3,
     0.25,
-    true,
+    false,
     c.alien.imageWidth,
     c.alien.imageHeight
 )
@@ -129,7 +129,8 @@ c.animationInfo.explosion = AnimationInfo(
     4 * c.explosionSize
 )
 
-c.reloadDuration = c.animationInfo.death.frameDuration * c.animationInfo.death.framesCount
+c.deathAnimationDuration = c.animationInfo.death.frameDuration * c.animationInfo.death.framesCount
+c.reloadDuration = c.deathAnimationDuration
 
 c.buttonX = c.screenWidth - c.buttonSize - c.offset
 c.soundButtonY = c.screenHeight - (c.buttonSize + c.offset) * 2
