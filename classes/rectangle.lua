@@ -17,10 +17,10 @@ function Rectangle:toQuad(refWidth, refHeight)
     return love.graphics.newQuad(self.x, self.y, self.width, self.height, refWidth, refHeight)
 end
 
-function Rectangle:draw(r, g, b)
-    love.graphics.setColor(r, g, b)
+function Rectangle:draw(color)
+    love.graphics.setColor(color:toRgba())
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(1, 1, 1)
+    love.graphics.setColor(Colors.white:toRgba())
 end
 
 function Rectangle:right()

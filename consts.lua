@@ -42,17 +42,17 @@ local c = {
     borderColor = Color(0, 0, 0, 240),
 
     colors = {
-        Color(220, 20, 60, 255):normalized(), -- red
-		Color(50, 205, 50, 255):normalized(), -- green
-		Color(255, 105, 180, 255):normalized(), -- rose
-		Color(255, 165, 0, 255):normalized(), -- orange
-		Color(255, 255, 0, 255):normalized(), -- yellow
-		Color(138, 43, 226, 255):normalized(), -- purple
-		Color(139, 69, 19, 255):normalized(), -- brown
-		Color(0, 255, 255, 255):normalized(), -- cyan
-		Color(0, 0, 255, 255):normalized(), -- blue
-		Color(0, 0, 0, 255):normalized(), -- black
-		Color(255, 255, 255, 255):normalized(), -- white
+        Color(220, 20, 60, 255), -- red
+		Color(50, 205, 50, 255), -- green
+		Color(255, 105, 180, 255), -- rose
+		Color(255, 165, 0, 255), -- orange
+		Color(255, 255, 0, 255), -- yellow
+		Color(138, 43, 226, 255), -- purple
+		Color(139, 69, 19, 255), -- brown
+		Color(0, 255, 255, 255), -- cyan
+		Color(0, 0, 255, 255), -- blue
+		Color(0, 0, 0, 255), -- black
+		Color(255, 255, 255, 255), -- white
     },
 
     gui = {},

@@ -60,22 +60,22 @@ end
 
 function AccessoriesColor:adapt(alienColor)
     for i, accessoryColor in pairs(self.colors) do
-        if not accessoryColor then
+        if not accessoryColor.optionalColor then
             goto continue
         end
 
-        while accessoryColor:equals(alienColor) do
-            accessoryColor = RandomColor()
+        while accessoryColor.optionalColor:equals(alienColor) do
+            accessoryColor.optionalColor = RandomColor()
         end
-        self.colors[i] = accessoryColor
+        self.colors[i].optionalColor = accessoryColor.optionalColor
         ::continue::
     end
 end
 
 function AccessoriesColor:change(alienColor)
-    for _, accessoryColor in pairs(self.colors) do
+    for tag, accessoryColor in pairs(self.colors) do
         if accessoryColor.optionalColor then
-            accessoryColor.optionalColor = RandomColor()
+            self.colors[tag].optionalColor = RandomColor()
         end
     end
     self:adapt(alienColor)
@@ -83,17 +83,23 @@ end
 
 function AccessoriesColor:draw(images, quad, orientationX, x, y, scale)
     for tag, accessoryColor in pairs(self.colors) do
-        if accessoryColor.optionalColor then
+        local color = accessoryColor.optionalColor
+        if color then
+            love.graphics.setColor(color:toRgba())
             love.graphics.draw(images[tag], quad, x, y, 0, orientationX * scale, scale)
+            love.graphics.setColor(Colors.white:toRgba())
         end
     end
 end
 
 function AccessoriesColor:drawGui(images, x, y, scale)
     for tag, accessoryColor in pairs(self.colors) do
-        if accessoryColor.optionalColor then
+        local color = accessoryColor.optionalColor
+        if color then
+            love.graphics.setColor(color:toRgba())
             -- TODO: put that quad inside constructor
-            love.graphics.draw(images[tag], Consts.animationInfo.idle.startRect:toQuad(), x, y, 0, scale, scale)
+            love.graphics.draw(images[tag], Consts.animationInfo.idle.startRect:toQuad(images[tag]:getWidth(), images[tag]:getHeight()), x, y, 0, scale, scale)
+            love.graphics.setColor(Colors.white:toRgba())
         end
     end
 end

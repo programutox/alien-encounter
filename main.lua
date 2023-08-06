@@ -143,7 +143,7 @@ local function launchGame()
     state = "game"
     score = 0
     resetLives()
-    group = Group(0)
+    group = Group(11)
     texts.score:set(string.format("%02d/%02d", score, highscore))
     clock:restart()
     playSound(sounds.start)
@@ -228,7 +228,7 @@ local function drawMenu()
 end
 
 local function drawGame()
-    Consts.gui.rect:draw(0.5, 0.5, 0.5)
+    Consts.gui.rect:draw(Colors.gray)
 
     group:draw(images)
     group:drawGui(images)
@@ -248,8 +248,8 @@ local function drawGame()
         Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
     )
 
-    Consts.gui.bgTimeBar:draw(Colors.black.r, Colors.black.g, Colors.black.b)
-    timeBar:draw(Colors.orange.r, Colors.orange.g, Colors.orange.b)
+    Consts.gui.bgTimeBar:draw(Colors.black)
+    timeBar:draw(Colors.orange)
 end
 
 local function drawLost()

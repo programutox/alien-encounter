@@ -129,14 +129,14 @@ end
 -- No shadow, we don't need it
 function Alien:draw(images)
     local quad = self:getCurrentQuad()
-    love.graphics.setColor(self.color.r, self.color.g, self.color.b)
+    love.graphics.setColor(self.color:toRgba())
     love.graphics.draw(images.alien, quad, self.rect.x, self.rect.y, 0, self.orientationX * self.scale, self.scale)
-    love.graphics.setColor(Colors.white.r, Colors.white.g, Colors.white.b)
+    love.graphics.setColor(Colors.white:toRgba())
 
     if self.color:equals(Colors.black) then
-        love.graphics.setColor(Colors.gray.r, Colors.gray.g, Colors.gray.b)
+        love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, self.rect.x, self.rect.y, 0, self.orientationX * self.scale, self.scale)
-        love.graphics.setColor(Colors.white.r, Colors.white.g, Colors.white.b)
+        love.graphics.setColor(Colors.white:toRgba())
     end
 
     self.accessoriesColor:draw(images, quad, self.orientationX, self.rect.x, self.rect.y, self.scale)
@@ -146,13 +146,15 @@ function Alien:drawGui(images)
     local destRect = self:getGuiRect()
     local quad = Consts.animationInfo.idle.startRect:toQuad(Consts.alien.imageWidth, Consts.alien.imageHeight)
 
-    love.graphics.setColor(self.color.r, self.color.g, self.color.b)
+    love.graphics.setColor(self.color:toRgba())
     love.graphics.draw(images.alien, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
-    love.graphics.setColor(Colors.white.r, Colors.white.g, Colors.white.b)
+    love.graphics.setColor(Colors.white:toRgba())
 
     if self.color:equals(Colors.black) then
-        love.graphics.setColor(Colors.gray.r, Colors.gray.g, Colors.gray.b)
+        love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
-        love.graphics.setColor(Colors.white.r, Colors.white.g, Colors.white.b)
+        love.graphics.setColor(Colors.white:toRgba())
     end
+
+    self.accessoriesColor:drawGui(images, destRect.x, destRect.y, self.scale)
 end
