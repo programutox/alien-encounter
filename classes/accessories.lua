@@ -5,6 +5,18 @@ function AccessoryColor:new(reversable, optionalColor)
     self.optionalColor = optionalColor
 end
 
+function CloneAccessoryColor(other)
+    local optionalColor = nil
+    if other.optionalColor then
+        optionalColor = CloneColor(other.optionalColor)
+    end
+    return AccessoryColor(other.reversable, optionalColor)
+end
+
+function AccessoryColor:equals(other)
+    return self.reversable == other.reversable and ((self.optionalColor == nil and other.optionalColor == nil) or self.optionalColor:equals(other.optionalColor))
+end
+
 local function newOptionalColor()
     if math.random(1, 3) == 1 then
         return RandomColor()
@@ -19,11 +31,19 @@ function Accessories:new()
     self.colors = {}
 end
 
-function Accessories:from(other)
-    self.colors = {}
-    for k, color in pairs(other.colors) do
-        self.colors[k] = color
+function CreateVariantAccessories(other, alienColor)
+    local result = Accessories()
+    for tag, accessoryColor in pairs(other.colors) do
+        if accessoryColor.optionalColor then
+            repeat
+                result.colors[tag] = AccessoryColor(accessoryColor.reversable, RandomColor())
+            until not result.colors[tag].optionalColor:equals(accessoryColor.optionalColor)
+        else
+            result.colors[tag] = AccessoryColor(accessoryColor.reversable, nil)
+        end
     end
+    result:adapt(alienColor)
+    return result
 end
 
 function Accessories:add(tag, reversable)
@@ -58,8 +78,17 @@ function Accessories:createAtLeastOneAccessory()
     self.colors[key] = AccessoryColor(self.colors[key].reversable, RandomColor())
 end
 
+function Accessories:equals(other)
+    for i, accessoryColor in ipairs(other.colors) do
+        if not self.colors[i]:equals(accessoryColor) then
+            return false
+        end
+    end
+    return true
+end
+
 function Accessories:adapt(alienColor)
-    for i, accessoryColor in pairs(self.colors) do
+    for _, accessoryColor in pairs(self.colors) do
         if not accessoryColor.optionalColor then
             goto continue
         end
@@ -72,7 +101,7 @@ function Accessories:adapt(alienColor)
     end
 end
 
-function Accessories:change(alienColor)
+function Accessories:changeColors(alienColor)
     for _, accessoryColor in pairs(self.colors) do
         if accessoryColor.optionalColor then
             accessoryColor.optionalColor = RandomColor()

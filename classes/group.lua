@@ -3,12 +3,13 @@ require("classes.alien")
 Group = Object:extend()
 
 local function getRandomRoundType(round)
-    local roundTypes = { "normal", "size" }
+    -- local roundTypes = { "normal", "size" }
     -- if round >= 15 then
     --     table.insert(roundTypes, "accessory")
     -- end
-    local index = math.random(1, #roundTypes)
-    return roundTypes[index]
+    -- local index = math.random(1, #roundTypes)
+    -- return roundTypes[index]
+    return "accessory"
 end
 
 local function newAlien(condition, i, criminalColor, moving, round)
@@ -41,6 +42,24 @@ function Group:createSizeRound()
     end
 end
 
+function Group:createAccessoryRound()
+    local isCriminalLittle = math.random(1, 4) == 1
+    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColor, self.moving, self.round)
+    criminal.accessories:createAtLeastOneAccessory()
+
+    for i=1, Consts.alien.headcount do
+        if i == self.criminalId then
+            table.insert(self.aliens, criminal)
+            goto continue
+        end
+
+        local alien = newAlien(isCriminalLittle, i, self.criminalColor, self.moving, self.round)
+        alien.accessories = CreateVariantAccessories(criminal.accessories, alien.color)
+        table.insert(self.aliens, alien)
+        ::continue::
+    end
+end
+
 function Group:new(round, highscore, font)
     self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
     self.highscore = highscore
@@ -50,7 +69,8 @@ function Group:new(round, highscore, font)
     self.criminalColor = RandomColor()
     self.criminalId = math.random(1, Consts.alien.headcount)
     self.moving = self.round % 10 >= 5
-    self.limitedRange = not self.moving and self.round > 10 and math.random(1, 4) == 1
+    -- self.limitedRange = not self.moving and self.round > 10 and math.random(1, 5) == 1
+    self.limitedRange = false
     self.aliens = {}
 
     local roundType = getRandomRoundType(round)
@@ -60,7 +80,7 @@ function Group:new(round, highscore, font)
     elseif roundType == "size" then
         self:createSizeRound()
     elseif roundType == "accessory" then
-        error("Accessory round not implemented")
+        self:createAccessoryRound()
     end
 end
 

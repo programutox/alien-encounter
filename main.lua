@@ -95,7 +95,6 @@ function love.load()
     texts.lostTitle = love.graphics.newText(bigFont, "You lost!")
     texts.lostScore = love.graphics.newText(Font)
     texts.sub = love.graphics.newText(Font, "Press [space] to start")
-    -- texts.score = love.graphics.newText(font, string.format("%02d/%02d", score, highscore))
 
     music = love.audio.newSource("assets/mus/alien_swamp.ogg", "stream")
 
@@ -176,8 +175,7 @@ end
 local function launchGame()
     state = "game"
     resetLives()
-    group = Group(0, highscore, Font)
-    -- texts.score:set(string.format("%02d/%02d", score, highscore))
+    group = Group(11, highscore, Font)
     clock:restart()
     playSound(sounds.start)
     if musicButton.on then
@@ -237,6 +235,7 @@ function love.update(dt)
     if criminalShot and clock:elapsedSeconds() > Consts.deathAnimationDuration then
         if (group.round + 1) % 10 == 0 and lives < Consts.livesMax then
             lives = lives + 1
+            heartsQuad[lives] = love.graphics.newQuad(0, 0, Consts.heartSize, Consts.heartSize, images.heart)
             playSound(sounds.heal)
         end
         group:reset(true)
@@ -292,12 +291,6 @@ local function drawGame()
     if canDrawExplosion and not explosionAnimation:isOver() then
         love.graphics.draw(images.explosion, explosionAnimation:getCurrentQuad(), explosionX, explosionY)
     end
-
-    -- love.graphics.draw(
-    --     texts.score,
-    --     Consts.screenWidth - texts.score:getWidth() - Consts.offset,
-    --     Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
-    -- )
 
     Consts.gui.bgTimeBar:draw(Colors.black)
     timeBar:draw(Colors.orange)
