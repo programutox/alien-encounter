@@ -10,7 +10,6 @@ local music
 local state = "menu"
 local targetX, targetY = 0, 0
 
-local score = 0
 local highscore = 0
 local startHighscore = 0
 local lives = Consts.livesMax
@@ -90,13 +89,13 @@ function love.load()
 
     loadHighscore()
 
-    local font = love.graphics.setNewFont(20)
+    Font = love.graphics.setNewFont(20)
     local bigFont = love.graphics.setNewFont(50)
 
     texts.lostTitle = love.graphics.newText(bigFont, "You lost!")
-    texts.lostScore = love.graphics.newText(font)
-    texts.sub = love.graphics.newText(font, "Press [space] to start")
-    texts.score = love.graphics.newText(font, string.format("%02d/%02d", score, highscore))
+    texts.lostScore = love.graphics.newText(Font)
+    texts.sub = love.graphics.newText(Font, "Press [space] to start")
+    -- texts.score = love.graphics.newText(font, string.format("%02d/%02d", score, highscore))
 
     music = love.audio.newSource("assets/mus/alien_swamp.ogg", "stream")
 
@@ -119,7 +118,7 @@ local function loseLife()
     lives = lives - 1
 end
 
-local function gameMousePressed(mouseX, mouseY)
+local function gameMousePressed()
     if reloadClock:elapsedSeconds() < Consts.reloadDuration or criminalShot then
         return
     end
@@ -128,10 +127,10 @@ local function gameMousePressed(mouseX, mouseY)
     if #clickedAliens == 0 then
         return
     end
-    
+
     canShoot = false
     reloadClock:restart()
-    
+
     local innocentAliensId = {}
     for _, alien in ipairs(clickedAliens) do
         if alien.id ~= group.criminalId then
@@ -162,7 +161,7 @@ local function gameMousePressed(mouseX, mouseY)
     playSound(sounds.shoot)
 end
 
-function love.mousepressed(x, y, button, _, _)
+function love.mousepressed(_, _, button, _, _)
     if button ~= Consts.leftClick then
         return
     end
@@ -170,16 +169,15 @@ function love.mousepressed(x, y, button, _, _)
     if state == "menu" then
         menuMousePressed()
     elseif state == "game" then
-        gameMousePressed(x, y)
+        gameMousePressed()
     end
 end
 
 local function launchGame()
     state = "game"
-    score = 0
     resetLives()
-    group = Group(0)
-    texts.score:set(string.format("%02d/%02d", score, highscore))
+    group = Group(0, highscore, Font)
+    -- texts.score:set(string.format("%02d/%02d", score, highscore))
     clock:restart()
     playSound(sounds.start)
     if musicButton.on then
@@ -189,6 +187,7 @@ end
 
 local function launchLost()
     state = "lost"
+    local score = group.round
     group = nil
     canShoot = true
 
@@ -283,6 +282,7 @@ end
 local function drawGame()
     group:draw(images)
     group:drawGui(images)
+    group:drawScore()
 
     for i, quad in ipairs(heartsQuad) do
         local x = 80 + (i - 1) * (5 + Consts.heartSize)
@@ -293,11 +293,11 @@ local function drawGame()
         love.graphics.draw(images.explosion, explosionAnimation:getCurrentQuad(), explosionX, explosionY)
     end
 
-    love.graphics.draw(
-        texts.score,
-        Consts.screenWidth - texts.score:getWidth() - Consts.offset, 
-        Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
-    )
+    -- love.graphics.draw(
+    --     texts.score,
+    --     Consts.screenWidth - texts.score:getWidth() - Consts.offset,
+    --     Consts.gui.rect.y + (Consts.gui.height - texts.score:getHeight()) / 2
+    -- )
 
     Consts.gui.bgTimeBar:draw(Colors.black)
     timeBar:draw(Colors.orange)

@@ -37,7 +37,11 @@ function Group:createNormalRound(round)
     end
 end
 
-function Group:new(round)
+function Group:new(round, highscore, font)
+    self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
+    self.highscore = highscore
+    self.font = font
+
     local roundType = getRandomRoundType(round)
     -- TODO Remove the line below later
     roundType = "normal"
@@ -49,9 +53,9 @@ end
 
 function Group:reset(addRound)
     if addRound then
-        self:new(self.round + 1)
+        self:new(self.round + 1, self.highscore, self.font)
     else
-        self:new(self.round)
+        self:new(self.round, self.highscore, self.font)
     end
 end
 
@@ -124,4 +128,12 @@ function Group:drawGui(images)
             break
         end
     end
+end
+
+function Group:drawScore()
+    love.graphics.draw(
+        self.scoreText,
+        Consts.screenWidth - self.scoreText:getWidth() - Consts.offset,
+        Consts.gui.rect.y + (Consts.gui.height - self.scoreText:getHeight()) / 2
+    )
 end
