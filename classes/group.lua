@@ -69,10 +69,24 @@ function Group:draw(images)
         self.aliens[i]:draw(images)
     end
 
-    -- TODO Add draw borders
+    if not self.limitedRange then
+        return
+    end
+
+    local x, y = love.mouse.getPosition()
+    Rectangle(0, 0, x - Consts.borderRadius, Consts.screenHeight):draw(Consts.borderColor)
+    Rectangle(x - Consts.borderRadius, 0, Consts.borderRadius * 2, y - Consts.borderRadius):draw(Consts.borderColor)
+    Rectangle(x - Consts.borderRadius, y + Consts.borderRadius, Consts.borderRadius * 2, Consts.screenHeight):draw(Consts.borderColor)
+    Rectangle(x + Consts.borderRadius, 0, Consts.screenWidth - x + Consts.borderRadius, Consts.screenHeight):draw(Consts.borderColor)
+
+    love.graphics.setColor(Consts.borderColor:toRgba())
+    love.graphics.draw(images.border, x - Consts.borderRadius, y - Consts.borderRadius)
+    love.graphics.setColor(Colors.white:toRgba())
 end
 
 function Group:drawGui(images)
+    Consts.gui.rect:draw(Colors.gray)
+
     for i, _ in ipairs(self.aliens) do
         if i == self.criminalId then
             self.aliens[i]:drawGui(images)

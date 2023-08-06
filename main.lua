@@ -1,7 +1,5 @@
 Consts = require("consts")
-require("classes.animation")
 require("classes.button")
-require("classes.clock")
 require("classes.group")
 
 local images = {}
@@ -228,8 +226,6 @@ local function drawMenu()
 end
 
 local function drawGame()
-    Consts.gui.rect:draw(Colors.gray)
-
     group:draw(images)
     group:drawGui(images)
 
