@@ -96,11 +96,11 @@ function Alien:updateMovement(dt)
     self.rect.x = self.rect.x + self.orientationX * self.speed * dt
     self.rect.y = self.rect.y + self.orientationY * self.speed * dt
 
-    if self.orientationX < 0 and self.rect.x < self.rect.width then
+    if self.rect.x < 0 then
         self.rect.x = 0
         self.orientationX = -self.orientationX
-    elseif self.orientationX > 0 and self.rect.x > Consts.screenWidth - self.rect.width then
-        self.rect.x = Consts.screenWidth
+    elseif self.rect.x > Consts.screenWidth - self.rect.width then
+        self.rect.x = Consts.screenWidth - self.rect.width
         self.orientationX = -self.orientationX
     end
 
@@ -122,18 +122,22 @@ end
 
 -- No shadow, we don't need it
 function Alien:draw(images)
+    local offsetX = 0
+    if self.orientationX < 0 then
+        offsetX = self.rect.width
+    end
     local quad = self:getCurrentQuad()
     love.graphics.setColor(self.color:toRgba())
-    love.graphics.draw(images.alien, quad, self.rect.x, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+    love.graphics.draw(images.alien, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
     love.graphics.setColor(Colors.white:toRgba())
 
     if self.color:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
-        love.graphics.draw(images.eye, quad, self.rect.x, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+        love.graphics.draw(images.eye, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())
     end
 
-    self.accessories:draw(images, quad, self.orientationX, self.rect.x, self.rect.y, self.scale)
+    self.accessories:draw(images, quad, self.orientationX, self.rect.x + offsetX, self.rect.y, self.scale)
 end
 
 function Alien:drawGui(images)

@@ -5,14 +5,6 @@ function AccessoryColor:new(reversable, optionalColor)
     self.optionalColor = optionalColor
 end
 
-function CloneAccessoryColor(other)
-    local optionalColor = nil
-    if other.optionalColor then
-        optionalColor = CloneColor(other.optionalColor)
-    end
-    return AccessoryColor(other.reversable, optionalColor)
-end
-
 function AccessoryColor:equals(other)
     return self.reversable == other.reversable and ((self.optionalColor == nil and other.optionalColor == nil) or self.optionalColor:equals(other.optionalColor))
 end
