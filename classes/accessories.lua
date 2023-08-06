@@ -29,7 +29,7 @@ function CreateVariantAccessories(other, alienColor)
         if accessoryColor.optionalColor then
             repeat
                 result.colors[tag] = AccessoryColor(accessoryColor.reversable, RandomColor())
-            until not result.colors[tag].optionalColor:equals(accessoryColor.optionalColor)
+            until not (result.colors[tag].optionalColor:equals(accessoryColor.optionalColor) or result.colors[tag].optionalColor:equals(alienColor))
         else
             result.colors[tag] = AccessoryColor(accessoryColor.reversable, nil)
         end
