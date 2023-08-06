@@ -33,7 +33,7 @@ function Group:createNormalRound(round)
         while i ~= self.criminalId and alien.color:equals(self.criminalColor) do
             alien.color = RandomColor()
         end
-        alien.accessoriesColor:adapt(alien.color)
+        alien.accessories:adapt(alien.color)
         table.insert(self.aliens, alien)
     end
 end

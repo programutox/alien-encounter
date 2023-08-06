@@ -1,6 +1,6 @@
 require("classes.rectangle")
 require("classes.animation")
-require("classes.accessoriescolor")
+require("classes.accessories")
 
 Alien = Object:extend()
 
@@ -29,12 +29,12 @@ function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, rou
         rect.x = rect:right()
     end
 
-    self.accessoriesColor = AccessoriesColor()
+    self.accessories = Accessories()
 
     if round >= 10 then
-        self.accessoriesColor:add("monocle", false)
-        self.accessoriesColor:add("helmet", false)
-        self.accessoriesColor:add("shoes", true)
+        self.accessories:add("monocle", false)
+        self.accessories:add("helmet", false)
+        self.accessories:add("shoes", true)
     end
 
     self.id = i
@@ -89,8 +89,8 @@ function Alien:changeAnimation(animationInfo)
     self.orientationX = 1
 end
 
-function Alien:adaptAccessoriesColor()
-    self.accessoriesColor:adapt(self.color)
+function Alien:adaptAccessories()
+    self.accessories:adapt(self.color)
 end
 
 function Alien:flipHorizontally()
@@ -139,7 +139,7 @@ function Alien:draw(images)
         love.graphics.setColor(Colors.white:toRgba())
     end
 
-    self.accessoriesColor:draw(images, quad, self.orientationX, self.rect.x, self.rect.y, self.scale)
+    self.accessories:draw(images, quad, self.orientationX, self.rect.x, self.rect.y, self.scale)
 end
 
 function Alien:drawGui(images)
@@ -156,5 +156,5 @@ function Alien:drawGui(images)
         love.graphics.setColor(Colors.white:toRgba())
     end
 
-    self.accessoriesColor:drawGui(images, destRect.x, destRect.y, self.scale)
+    self.accessories:drawGui(images, destRect.x, destRect.y, self.scale)
 end
