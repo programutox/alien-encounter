@@ -223,6 +223,8 @@ function love.keypressed(key)
     elseif state == "lost" then
         if key == "space" then
             launchGame()
+        elseif key == "escape" then
+            love.event.quit()
         end
     end
 end
