@@ -21,6 +21,7 @@ Accessories = Object:extend()
 
 function Accessories:new()
     self.colors = {}
+    self.guiQuad = love.graphics.newQuad(0, 0, Consts.alien.frameWidth, Consts.alien.frameHeight, Consts.alien.imageWidth, Consts.alien.imageHeight)
 end
 
 function CreateVariantAccessories(other, alienColor)
@@ -117,8 +118,7 @@ function Accessories:drawGui(images, x, y, scale)
         local color = accessoryColor.optionalColor
         if color then
             love.graphics.setColor(color:toRgba())
-            -- TODO: put that quad inside constructor
-            love.graphics.draw(images[tag], Consts.animationInfo.idle.startRect:toQuad(images[tag]:getWidth(), images[tag]:getHeight()), x, y, 0, scale, scale)
+            love.graphics.draw(images[tag], self.guiQuad, x, y, 0, scale, scale)
             love.graphics.setColor(Colors.white:toRgba())
         end
     end
