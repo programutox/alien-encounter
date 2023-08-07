@@ -133,7 +133,8 @@ c.deathAnimationDuration = c.animationInfo.death.frameDuration * c.animationInfo
 c.reloadDuration = c.deathAnimationDuration
 
 c.buttonX = c.screenWidth - c.buttonSize - c.offset
-c.soundButtonY = c.screenHeight - (c.buttonSize + c.offset) * 2
-c.musicButtonY = c.screenHeight - (c.buttonSize + c.offset)
+c.soundButtonY = c.screenHeight - (c.buttonSize + c.offset) * 3
+c.musicButtonY = c.screenHeight - (c.buttonSize + c.offset) * 2
+c.colorsButtonY = c.screenHeight - (c.buttonSize + c.offset)
 
 return protect(c)

@@ -2,10 +2,13 @@ require("classes.alien")
 
 Group = Object:extend()
 
-local function getRandomRoundType(round)
+local function getRandomRoundType(round, colorsOn)
     local roundTypes = { "normal", "size" }
     if round >= 15 then
         table.insert(roundTypes, "accessory")
+    end
+    if colorsOn and round >= 30 then
+        table.insert(roundTypes, "changingColor")
     end
     local index = math.random(1, #roundTypes)
     return roundTypes[index]
@@ -59,7 +62,12 @@ function Group:createAccessoryRound()
     end
 end
 
-function Group:new(round, highscore, font)
+function Group:createChangingColorRound()
+    self.clock = Clock()
+    self:createNormalRound()
+end
+
+function Group:new(round, highscore, font, colorsOn)
     self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
     self.highscore = highscore
     self.font = font
@@ -69,9 +77,11 @@ function Group:new(round, highscore, font)
     self.criminalId = math.random(1, Consts.alien.headcount)
     self.moving = self.round % 10 >= 5
     self.limitedRange = not self.moving and self.round > 10 and math.random(1, 5) == 1
+    self.clock = nil
     self.aliens = {}
+    self.colorsOn = colorsOn
 
-    local roundType = getRandomRoundType(round)
+    local roundType = getRandomRoundType(round, colorsOn)
 
     if roundType == "normal" then
         self:createNormalRound()
@@ -79,14 +89,18 @@ function Group:new(round, highscore, font)
         self:createSizeRound()
     elseif roundType == "accessory" then
         self:createAccessoryRound()
+    elseif roundType == "changingColor" then
+        self:createChangingColorRound()
+    else
+        error("Got unexpected roundType", 2)
     end
 end
 
 function Group:reset(addRound)
     if addRound then
-        self:new(self.round + 1, self.highscore, self.font)
+        self:new(self.round + 1, self.highscore, self.font, self.colorsOn)
     else
-        self:new(self.round, self.highscore, self.font)
+        self:new(self.round, self.highscore, self.font, self.colorsOn)
     end
 end
 
@@ -116,7 +130,7 @@ function Group:triggerCriminalDeath()
     end
 end
 
-function Group:update(dt)
+function Group:update(dt, criminalShot)
     for i, alien in ipairs(self.aliens) do
         if alien:isDeathAnimationOver() then
             table.remove(self.aliens, i)
@@ -124,6 +138,35 @@ function Group:update(dt)
             alien:update(self.moving, dt)
         end
     end
+
+    if not self.clock then
+        return
+    end
+
+    -- * This triggers a non-wanted behavior, but it looks cool (not for epileptic tho). 
+    if self.clock:elapsedSeconds() < 0.5 and not criminalShot then
+        return
+    end
+
+    -- if self.clock and self.clock:elapsedSeconds() < 0.5 or criminalShot then
+    --     return
+    -- end
+
+    self.criminalColor = RandomColor()
+    for i, alien in ipairs(self.aliens) do
+        if i == self.criminalId then
+            alien.color = self.criminalColor
+            alien.accessories:adapt(alien.color)
+            goto continue
+        end
+
+        repeat
+            alien.color = RandomColor()
+        until not alien.color:equals(self.criminalColor)
+        alien.accessories:adapt(alien.color)
+        ::continue::
+    end
+    self.clock:restart()
 end
 
 function Group:draw(images)

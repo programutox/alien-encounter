@@ -20,6 +20,7 @@ local canDrawExplosion = false
 
 local soundButton = Button(Consts.buttonX, Consts.soundButtonY)
 local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
+local colorsButton = Button(Consts.buttonX, Consts.colorsButtonY)
 
 -- Quads are slow when called repeatedly, so it is better to store them in a table
 local heartsQuad = {}
@@ -110,6 +111,9 @@ local function menuMousePressed()
     elseif musicButton:isHovered() then
         musicButton:toggle()
         playSound(sounds.press)
+    elseif colorsButton:isHovered() then
+        colorsButton:toggle()
+        playSound(sounds.press)
     end
 end
 
@@ -176,7 +180,7 @@ end
 local function launchGame()
     state = "game"
     resetLives()
-    group = Group(0, highscore, Font)
+    group = Group(0, highscore, Font, colorsButton.on)
     clock:restart()
     playSound(sounds.start)
     if musicButton.on then
@@ -257,7 +261,7 @@ function love.update(dt)
         canShoot = true
     end
 
-    group:update(dt)
+    group:update(dt, criminalShot)
     explosionAnimation:update()
     if not canDrawExplosion and explosionAnimation:isOver() then
         canDrawExplosion = true
@@ -279,6 +283,7 @@ local function drawMenu()
 
     soundButton:draw(images.soundOn, images.soundOff)
     musicButton:draw(images.musicOn, images.musicOff)
+    colorsButton:draw(images.colorsOn, images.colorsOff)
 end
 
 local function drawGame()
