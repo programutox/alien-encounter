@@ -24,10 +24,6 @@ local buttons = {
     colors = Button(Consts.buttonX, Consts.colorsButtonY)
 }
 
--- local buttons.sound = Button(Consts.buttonX, Consts.buttons.soundY)
--- local buttons.music = Button(Consts.buttonX, Consts.buttons.musicY)
--- local buttons.colors = Button(Consts.buttonX, Consts.buttons.colorsY)
-
 -- Quads are slow when called repeatedly, so it is better to store them in a table
 local heartsQuad = {}
 local clock = Clock()
