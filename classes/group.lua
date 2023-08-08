@@ -148,10 +148,6 @@ function Group:update(dt, criminalShot)
         return
     end
 
-    -- if self.clock and self.clock:elapsedSeconds() < 0.5 or criminalShot then
-    --     return
-    -- end
-
     self.criminalColor = RandomColor()
     for i, alien in ipairs(self.aliens) do
         if i == self.criminalId then

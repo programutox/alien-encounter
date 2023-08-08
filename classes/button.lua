@@ -20,6 +20,13 @@ function Button:toggle()
     self.on = not self.on
 end
 
+function Button:updateIfClicked(func)
+    if self:isHovered() then
+        self:toggle()
+        func()
+    end
+end
+
 function Button:draw(imageOn, imageOff)
     local image = imageOn
     if not self.on then

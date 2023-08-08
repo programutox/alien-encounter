@@ -18,9 +18,15 @@ local explosionAnimation = Animation(Consts.animationInfo.explosion)
 local explosionX, explosionY = 0, 0
 local canDrawExplosion = false
 
-local soundButton = Button(Consts.buttonX, Consts.soundButtonY)
-local musicButton = Button(Consts.buttonX, Consts.musicButtonY)
-local colorsButton = Button(Consts.buttonX, Consts.colorsButtonY)
+local buttons = {
+    sound = Button(Consts.buttonX, Consts.soundButtonY),
+    music = Button(Consts.buttonX, Consts.musicButtonY),
+    colors = Button(Consts.buttonX, Consts.colorsButtonY)
+}
+
+-- local buttons.sound = Button(Consts.buttonX, Consts.buttons.soundY)
+-- local buttons.music = Button(Consts.buttonX, Consts.buttons.musicY)
+-- local buttons.colors = Button(Consts.buttonX, Consts.buttons.colorsY)
 
 -- Quads are slow when called repeatedly, so it is better to store them in a table
 local heartsQuad = {}
@@ -34,10 +40,12 @@ local criminalShot = false
 local canShoot = true
 
 local function playSound(sound)
-    if soundButton.on then
+    if buttons.sound.on then
         sound:play()
     end
 end
+
+local playPressSound = function () playSound(sounds.press) end
 
 local function loadHighscore()
     local file = io.open(Consts.highscoreFilePath)
@@ -105,15 +113,8 @@ function love.load()
 end
 
 local function menuMousePressed()
-    if soundButton:isHovered() then
-        soundButton:toggle()
-        playSound(sounds.press)
-    elseif musicButton:isHovered() then
-        musicButton:toggle()
-        playSound(sounds.press)
-    elseif colorsButton:isHovered() then
-        colorsButton:toggle()
-        playSound(sounds.press)
+    for _, b in pairs(buttons) do
+        b:updateIfClicked(playPressSound)
     end
 end
 
@@ -180,10 +181,10 @@ end
 local function launchGame()
     state = "game"
     resetLives()
-    group = Group(0, highscore, Font, colorsButton.on)
+    group = Group(0, highscore, Font, buttons.colors.on)
     clock:restart()
     playSound(sounds.start)
-    if musicButton.on then
+    if buttons.music.on then
         music:play()
     end
 end
@@ -203,7 +204,7 @@ local function launchLost()
     end
 
     texts.lostScore:set(text)
-    if musicButton.on then
+    if buttons.music.on then
         music:stop()
     end
     playSound(sounds.lost)
@@ -220,7 +221,7 @@ function love.keypressed(key)
         if key == "escape" then
             state = "menu"
             group = nil
-            if musicButton.on then
+            if buttons.music.on then
                 music:stop()
             end
         end
@@ -281,9 +282,9 @@ local function drawMenu()
     love.graphics.draw(images.logo, (Consts.screenWidth - images.logo:getWidth()) / 2, Consts.screenHeight / 4 - images.logo:getHeight() / 2)
     love.graphics.draw(texts.sub, (Consts.screenWidth - texts.sub:getWidth()) / 2, Consts.screenHeight * 0.75 - texts.sub:getHeight() / 2)
 
-    soundButton:draw(images.soundOn, images.soundOff)
-    musicButton:draw(images.musicOn, images.musicOff)
-    colorsButton:draw(images.colorsOn, images.colorsOff)
+    buttons.sound:draw(images.soundOn, images.soundOff)
+    buttons.music:draw(images.musicOn, images.musicOff)
+    buttons.colors:draw(images.colorsOn, images.colorsOff)
 end
 
 local function drawGame()
