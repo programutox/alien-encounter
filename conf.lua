@@ -5,4 +5,5 @@ function love.conf(t)
     t.window.width = consts.screenWidth
     t.window.height = consts.screenHeight
     t.window.title = consts.title
+    t.version = "11.4"
 end
