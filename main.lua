@@ -103,6 +103,7 @@ function love.load()
     texts.sub = love.graphics.newText(Font, "Press [space] to start")
 
     music = love.audio.newSource("assets/mus/alien_swamp.ogg", "stream")
+    music:setLooping(true)
 
     loadImages()
     loadSounds()
