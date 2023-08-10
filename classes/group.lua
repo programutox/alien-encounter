@@ -3,16 +3,21 @@ require("classes.alien")
 Group = Object:extend()
 
 local function getRandomRoundType(round, colorsOn)
-    -- local roundTypes = { "normal", "size" }
-    -- if round >= 15 then
-    --     table.insert(roundTypes, "accessory")
-    -- end
-    -- if colorsOn and round >= 30 then
-    --     table.insert(roundTypes, "changingColor")
-    -- end
-    -- local index = math.random(1, #roundTypes)
-    -- return roundTypes[index]
-    return "bicolor"
+    local roundTypes = { "normal", "size" }
+    if round >= 15 then
+        table.insert(roundTypes, "accessory")
+    end
+    if round >= 25 then
+        table.insert(roundTypes, "randomBicolor")
+    end
+    if round >= 35 then
+        table.insert(roundTypes, "bicolor")
+    end
+    if round >= 45 and colorsOn then
+        table.insert(roundTypes, "changingColor")
+    end
+    local index = math.random(1, #roundTypes)
+    return roundTypes[index]
 end
 
 local function newAlien(condition, i, criminalColors, moving, round)
@@ -81,9 +86,6 @@ function Group:createRandomBicolorRound()
 end
 
 function Group:createBicolorRound()
-    -- It is way too hard otherwise
-    self.moving = false
-
     repeat
         self.criminalColors[2] = RandomColor()
     until not self.criminalColors[2]:equals(self.criminalColors[1])
