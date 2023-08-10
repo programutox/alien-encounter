@@ -14,21 +14,21 @@ local function getRandomRoundType(round, colorsOn)
     return roundTypes[index]
 end
 
-local function newAlien(condition, i, criminalColor, moving, round)
+local function newAlien(condition, i, criminalColors, moving, round)
     if condition then
-        return NewBigAlien(i, criminalColor, moving, round)
+        return NewBigAlien(i, criminalColors, moving, round)
     else
-        return NewLittleAlien(i, criminalColor, moving, round)
+        return NewLittleAlien(i, criminalColors, moving, round)
     end
 end
 
 function Group:createNormalRound()
     for i=1, Consts.alien.headcount do
-        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors[1], self.moving, self.round)
-        while i ~= self.criminalId and alien.color:equals(self.criminalColors[1]) do
-            alien.color = RandomColor()
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
+        while i ~= self.criminalId and alien.colors[1]:equals(self.criminalColors[1]) do
+            alien.colors[1] = RandomColor()
         end
-        alien.accessories:adapt(alien.color)
+        alien:adaptAccessories(alien.colors[1])
         table.insert(self.aliens, alien)
     end
 end
@@ -38,15 +38,15 @@ function Group:createSizeRound()
     for i=1, Consts.alien.headcount do
         local isCriminal = i == self.criminalId
         -- This condition is equivalent to (is_criminal && is_criminal_little) || (!is_criminal && !is_criminal_little)
-        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColors[1], self.moving, self.round)
-        alien.accessories:adapt(alien.color)
+        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColors, self.moving, self.round)
+        alien:adaptAccessories(alien.colors[1])
         table.insert(self.aliens, alien)
     end
 end
 
 function Group:createAccessoryRound()
     local isCriminalLittle = math.random(1, 4) == 1
-    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColors[1], self.moving, self.round)
+    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColors, self.moving, self.round)
     criminal.accessories:createAtLeastOneAccessory()
 
     for i=1, Consts.alien.headcount do
@@ -55,8 +55,8 @@ function Group:createAccessoryRound()
             goto continue
         end
 
-        local alien = newAlien(isCriminalLittle, i, self.criminalColors[1], self.moving, self.round)
-        alien.accessories = CreateVariantAccessories(criminal.accessories, alien.color)
+        local alien = newAlien(isCriminalLittle, i, self.criminalColors, self.moving, self.round)
+        alien.accessories = CreateVariantAccessories(criminal.accessories, alien.colors[1])
         table.insert(self.aliens, alien)
         ::continue::
     end
@@ -65,6 +65,18 @@ end
 function Group:createChangingColorRound()
     self.clock = Clock()
     self:createNormalRound()
+end
+
+function Group:createBicolorRound()
+    table.insert(self.criminalColors, RandomColor())
+    for i=1, Consts.alien.headcount do
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
+        while i ~= self.criminalId and alien.colors[1]:equals(self.criminalColors[1]) and alien.colors[2]:equals(self.criminalColors[2]) do
+            alien.colors = { RandomColor(), RandomColor() }
+        end
+        alien:adaptAccessories(alien.colors[1])
+        table.insert(self.aliens, alien)
+    end
 end
 
 function Group:new(round, highscore, font, colorsOn)
@@ -151,15 +163,15 @@ function Group:update(dt, criminalShot)
     self.criminalColors = { RandomColor() }
     for i, alien in ipairs(self.aliens) do
         if i == self.criminalId then
-            alien.color = self.criminalColors[1]
-            alien.accessories:adapt(alien.color)
+            alien.colors[1] = self.criminalColors[1]
+            alien:adaptAccessories(alien.colors[1])
             goto continue
         end
 
         repeat
-            alien.color = RandomColor()
-        until not alien.color:equals(self.criminalColors[1])
-        alien.accessories:adapt(alien.color)
+            alien.colors[1] = RandomColor()
+        until not alien.colors[1]:equals(self.criminalColors[1])
+        alien:adaptAccessories(alien.colors[1])
         ::continue::
     end
     self.clock:restart()

@@ -12,7 +12,7 @@ local function getRandomOrientation()
     end
 end
 
-function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, round)
+function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, round)
     local orientationX, orientationY = 1, 1
     if moving then
         orientationX, orientationY = getRandomOrientation(), getRandomOrientation()
@@ -43,23 +43,24 @@ function Alien:new(i, criminalColor, moving, rect, guiX, guiY, scale, speed, rou
     self.orientationX = orientationX
     self.orientationY = orientationY
     self.scale = scale
-    self.color = criminalColor
+    self.colors = { criminalColors[1] }
     self.rect = rect
     self.speed = speed
 end
 
-function NewBigAlien(i, criminalColor, moving, round)
+
+function NewBigAlien(i, criminalColors, moving, round)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
     local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset)
     local rect = Rectangle(x, y, Consts.alien.width, Consts.alien.height)
-    return Alien(i, criminalColor, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.alien.scale, Consts.alien.speed, round)
+    return Alien(i, criminalColors, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.alien.scale, Consts.alien.speed, round)
 end
 
-function NewLittleAlien(i, criminalColor, moving, round)
+function NewLittleAlien(i, criminalColors, moving, round)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset) + Consts.littleAlienOffsetX
     local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset) + Consts.littleAlienOffsetY
     local rect = Rectangle(x, y, Consts.littleAlien.width, Consts.littleAlien.height)
-    return Alien(i, criminalColor, moving, rect, Consts.gui.littleAlienX, Consts.gui.littleAlienY, Consts.littleAlien.scale, Consts.littleAlien.speed, round)
+    return Alien(i, criminalColors, moving, rect, Consts.gui.littleAlienX, Consts.gui.littleAlienY, Consts.littleAlien.scale, Consts.littleAlien.speed, round)
 end
 
 local function pointInRect(x, y, rect)
@@ -89,7 +90,7 @@ function Alien:changeAnimation(animationInfo)
 end
 
 function Alien:adaptAccessories()
-    self.accessories:adapt(self.color)
+    self.accessories:adapt(self.colors[1])
 end
 
 function Alien:updateMovement(dt)
@@ -127,11 +128,11 @@ function Alien:draw(images)
         offsetX = self.rect.width
     end
     local quad = self:getCurrentQuad()
-    love.graphics.setColor(self.color:toRgba())
+    love.graphics.setColor(self.colors[1]:toRgba())
     love.graphics.draw(images.alien, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
     love.graphics.setColor(Colors.white:toRgba())
 
-    if self.color:equals(Colors.black) then
+    if self.colors[1]:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())
@@ -144,11 +145,11 @@ function Alien:drawGui(images)
     local destRect = self:getGuiRect()
     local quad = Consts.animationInfo.idle.startRect:toQuad(Consts.alien.imageWidth, Consts.alien.imageHeight)
 
-    love.graphics.setColor(self.color:toRgba())
+    love.graphics.setColor(self.colors[1]:toRgba())
     love.graphics.draw(images.alien, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
     love.graphics.setColor(Colors.white:toRgba())
 
-    if self.color:equals(Colors.black) then
+    if self.colors[1]:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())
