@@ -24,8 +24,8 @@ end
 
 function Group:createNormalRound()
     for i=1, Consts.alien.headcount do
-        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColor, self.moving, self.round)
-        while i ~= self.criminalId and alien.color:equals(self.criminalColor) do
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors[1], self.moving, self.round)
+        while i ~= self.criminalId and alien.color:equals(self.criminalColors[1]) do
             alien.color = RandomColor()
         end
         alien.accessories:adapt(alien.color)
@@ -38,7 +38,7 @@ function Group:createSizeRound()
     for i=1, Consts.alien.headcount do
         local isCriminal = i == self.criminalId
         -- This condition is equivalent to (is_criminal && is_criminal_little) || (!is_criminal && !is_criminal_little)
-        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColor, self.moving, self.round)
+        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColors[1], self.moving, self.round)
         alien.accessories:adapt(alien.color)
         table.insert(self.aliens, alien)
     end
@@ -46,7 +46,7 @@ end
 
 function Group:createAccessoryRound()
     local isCriminalLittle = math.random(1, 4) == 1
-    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColor, self.moving, self.round)
+    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColors[1], self.moving, self.round)
     criminal.accessories:createAtLeastOneAccessory()
 
     for i=1, Consts.alien.headcount do
@@ -55,7 +55,7 @@ function Group:createAccessoryRound()
             goto continue
         end
 
-        local alien = newAlien(isCriminalLittle, i, self.criminalColor, self.moving, self.round)
+        local alien = newAlien(isCriminalLittle, i, self.criminalColors[1], self.moving, self.round)
         alien.accessories = CreateVariantAccessories(criminal.accessories, alien.color)
         table.insert(self.aliens, alien)
         ::continue::
@@ -73,7 +73,7 @@ function Group:new(round, highscore, font, colorsOn)
     self.font = font
     self.round = round
 
-    self.criminalColor = RandomColor()
+    self.criminalColors = { RandomColor() }
     self.criminalId = math.random(1, Consts.alien.headcount)
     self.moving = self.round % 10 >= 5
     self.limitedRange = not self.moving and self.round > 10 and math.random(1, 5) == 1
@@ -148,17 +148,17 @@ function Group:update(dt, criminalShot)
         return
     end
 
-    self.criminalColor = RandomColor()
+    self.criminalColors = { RandomColor() }
     for i, alien in ipairs(self.aliens) do
         if i == self.criminalId then
-            alien.color = self.criminalColor
+            alien.color = self.criminalColors[1]
             alien.accessories:adapt(alien.color)
             goto continue
         end
 
         repeat
             alien.color = RandomColor()
-        until not alien.color:equals(self.criminalColor)
+        until not alien.color:equals(self.criminalColors[1])
         alien.accessories:adapt(alien.color)
         ::continue::
     end
