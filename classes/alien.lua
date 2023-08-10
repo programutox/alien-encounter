@@ -78,7 +78,7 @@ function Alien:isHovered()
     return pointInRect(x, y, self.rect)
 end
 
-function Alien:isUnicolor()
+function Alien:isSolidColored()
     return self.colors[1]:equals(self.colors[2])
 end
 
@@ -107,6 +107,11 @@ function Alien:switchDrawColors()
     if #self.colors == 2 then
         self.colors[1], self.colors[2] = self.colors[2], self.colors[1]
     end
+end
+
+function Alien:changeSolidColor(color)
+    self.colors[1] = color
+    self.guiColors[1] = color
 end
 
 function Alien:changeColors()

@@ -3,21 +3,22 @@ require("classes.alien")
 Group = Object:extend()
 
 local function getRandomRoundType(round, colorsOn)
-    local roundTypes = { "normal", "size" }
-    if round >= 15 then
-        table.insert(roundTypes, "accessory")
-    end
-    if round >= 25 then
-        table.insert(roundTypes, "randomBicolor")
-    end
-    if round >= 35 then
-        table.insert(roundTypes, "bicolor")
-    end
-    if round >= 45 and colorsOn then
-        table.insert(roundTypes, "changingColor")
-    end
-    local index = math.random(1, #roundTypes)
-    return roundTypes[index]
+    -- local roundTypes = { "normal", "size" }
+    -- if round >= 15 then
+    --     table.insert(roundTypes, "accessory")
+    -- end
+    -- if round >= 25 then
+    --     table.insert(roundTypes, "randomBicolor")
+    -- end
+    -- if round >= 35 then
+    --     table.insert(roundTypes, "bicolor")
+    -- end
+    -- if round >= 45 and colorsOn then
+    --     table.insert(roundTypes, "changingColor")
+    -- end
+    -- local index = math.random(1, #roundTypes)
+    -- return roundTypes[index]
+    return "changingColor"
 end
 
 local function newAlien(condition, i, criminalColors, moving, wearAccessories)
@@ -77,7 +78,7 @@ function Group:createRandomBicolorRound()
     table.insert(self.criminalColors, RandomColor())
     for i=1, Consts.alien.headcount do
         local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
-        while i ~= self.criminalId and (alien:hasSameColors(self.criminalColors) or alien:isUnicolor()) do
+        while i ~= self.criminalId and (alien:hasSameColors(self.criminalColors) or alien:isSolidColored()) do
             alien:changeColors()
         end
         alien:adaptAccessories(alien.colors[1])
@@ -185,16 +186,16 @@ function Group:update(dt, criminalShot)
         return
     end
 
-    self.criminalColors = { RandomColor() }
+    self.criminalColors[1] = RandomColor()
     for i, alien in ipairs(self.aliens) do
         if i == self.criminalId then
-            alien.colors[1] = self.criminalColors[1]
+            alien:changeSolidColor(self.criminalColors[1])
             alien:adaptAccessories(alien.colors[1])
             goto continue
         end
 
         repeat
-            alien.colors[1] = RandomColor()
+            alien:changeSolidColor(RandomColor())
         until not alien.colors[1]:equals(self.criminalColors[1])
         alien:adaptAccessories(alien.colors[1])
         ::continue::
