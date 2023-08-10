@@ -13,24 +13,12 @@ local function getRandomOrientation()
 end
 
 function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, round)
-    -- self.colors = { criminalColors[1] }
-    -- if #criminalColors == 2 then
-    --     table.insert(self.colors, criminalColors[2])
-    -- end
-    -- self.colors = criminalColors
-    -- self.guiColors = criminalColors
     self.colors = {}
     self.guiColors = {}
     for j, color in ipairs(criminalColors) do
-        self.colors[j] = CloneColor(color)
-        self.guiColors[j] = CloneColor(color)
+        self.colors[j] = color
+        self.guiColors[j] = color
     end
-
-    -- self.guiColors = { criminalColors[1] }
-    -- if #criminalColors == 2 then
-    --     table.insert(self.guiColors, criminalColors[2])
-    -- end
-    -- self.guiColors = criminalColors
 
     local orientationX, orientationY = 1, 1
     if moving then
