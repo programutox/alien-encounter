@@ -13,6 +13,25 @@ local function getRandomOrientation()
 end
 
 function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, round)
+    -- self.colors = { criminalColors[1] }
+    -- if #criminalColors == 2 then
+    --     table.insert(self.colors, criminalColors[2])
+    -- end
+    -- self.colors = criminalColors
+    -- self.guiColors = criminalColors
+    self.colors = {}
+    self.guiColors = {}
+    for j, color in ipairs(criminalColors) do
+        self.colors[j] = CloneColor(color)
+        self.guiColors[j] = CloneColor(color)
+    end
+
+    -- self.guiColors = { criminalColors[1] }
+    -- if #criminalColors == 2 then
+    --     table.insert(self.guiColors, criminalColors[2])
+    -- end
+    -- self.guiColors = criminalColors
+
     local orientationX, orientationY = 1, 1
     if moving then
         orientationX, orientationY = getRandomOrientation(), getRandomOrientation()
@@ -27,6 +46,7 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
         -- No need to reverse the animation
         -- Even when flipped, it will be drawn in the correct order, but the origin becomes top right
         rect.x = rect:right()
+        self:switchColors()
     end
 
     self.accessories = Accessories()
@@ -43,10 +63,6 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
     self.orientationX = orientationX
     self.orientationY = orientationY
     self.scale = scale
-    self.colors = { criminalColors[1] }
-    if #criminalColors == 2 then
-        table.insert(self.colors, criminalColors[2])
-    end
     self.rect = rect
     self.speed = speed
 end
@@ -78,8 +94,8 @@ function Alien:isUnicolor()
     return self.colors[1]:equals(self.colors[2])
 end
 
-function Alien:hasSameColors(colors)
-    return self.colors[1]:equals(colors[1]) and self.colors[2]:equals(colors[2])
+function Alien:hasSameColors(c)
+    return self.colors[1]:equals(c[1]) and self.colors[2]:equals(c[2]) or self.colors[1]:equals(c[2]) and self.colors[2]:equals(c[1])
 end
 
 function Alien:getGuiRect()
@@ -92,6 +108,17 @@ end
 
 function Alien:isDeathAnimationOver()
     return not self.animation.loop and self.animation:isOver()
+end
+
+function Alien:switchColors()
+    if #self.colors == 2 then
+        self.colors[1], self.colors[2] = self.colors[2], self.colors[1]
+    end
+end
+
+function Alien:changeColors()
+    self.colors = { RandomColor(), RandomColor() }
+    self.guiColors = { self.colors[1], self.colors[2] }
 end
 
 function Alien:changeAnimation(animationInfo)
@@ -110,9 +137,11 @@ function Alien:updateMovement(dt)
     if self.rect.x < 0 then
         self.rect.x = 0
         self.orientationX = -self.orientationX
+        self:switchColors()
     elseif self.rect.x > Consts.screenWidth - self.rect.width then
         self.rect.x = Consts.screenWidth - self.rect.width
         self.orientationX = -self.orientationX
+        self:switchColors()
     end
 
     if self.rect.y < 0 then
@@ -161,17 +190,17 @@ function Alien:drawGui(images)
     local destRect = self:getGuiRect()
     local quad = Consts.animationInfo.idle.startRect:toQuad(Consts.alien.imageWidth, Consts.alien.imageHeight)
 
-    love.graphics.setColor(self.colors[1]:toRgba())
-    if #self.colors == 1 then
+    love.graphics.setColor(self.guiColors[1]:toRgba())
+    if #self.guiColors == 1 then
         love.graphics.draw(images.alien, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
     else
         love.graphics.draw(images.alienLeft, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
-        love.graphics.setColor(self.colors[2]:toRgba())
+        love.graphics.setColor(self.guiColors[2]:toRgba())
         love.graphics.draw(images.alienRight, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
     end
     love.graphics.setColor(Colors.white:toRgba())
 
-    if self.colors[1]:equals(Colors.black) or self.colors[2] and self.colors[2]:equals(Colors.black) then
+    if self.guiColors[1]:equals(Colors.black) or self.guiColors[2] and self.guiColors[2]:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())

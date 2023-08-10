@@ -13,6 +13,10 @@ function Color:new(r, g, b, a)
     self.a = a / 255
 end
 
+function CloneColor(other)
+    return Color(other.r * 255, other.g * 255, other.b * 255, other.a * 255)
+end
+
 function Color:toRgba()
     return self.r, self.g, self.b, self.a
 end

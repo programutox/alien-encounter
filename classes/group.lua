@@ -73,7 +73,7 @@ function Group:createBicolorRound()
     for i=1, Consts.alien.headcount do
         local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
         while i ~= self.criminalId and (alien:hasSameColors(self.criminalColors) or alien:isUnicolor()) do
-            alien.colors = { RandomColor(), RandomColor() }
+            alien:changeColors()
         end
         alien:adaptAccessories(alien.colors[1])
         table.insert(self.aliens, alien)
