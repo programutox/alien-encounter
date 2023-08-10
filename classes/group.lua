@@ -12,7 +12,7 @@ local function getRandomRoundType(round, colorsOn)
     -- end
     -- local index = math.random(1, #roundTypes)
     -- return roundTypes[index]
-    return "bicolor"
+    return "randomBicolor"
 end
 
 local function newAlien(condition, i, criminalColors, moving, round)
@@ -68,7 +68,7 @@ function Group:createChangingColorRound()
     self:createNormalRound()
 end
 
-function Group:createBicolorRound()
+function Group:createRandomBicolorRound()
     table.insert(self.criminalColors, RandomColor())
     for i=1, Consts.alien.headcount do
         local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
@@ -104,8 +104,8 @@ function Group:new(round, highscore, font, colorsOn)
         self:createAccessoryRound()
     elseif roundType == "changingColor" then
         self:createChangingColorRound()
-    elseif roundType == "bicolor" then
-        self:createBicolorRound()
+    elseif roundType == "randomBicolor" then
+        self:createRandomBicolorRound()
     else
         error("Got unexpected roundType: " .. roundType, 2)
     end

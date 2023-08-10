@@ -111,6 +111,9 @@ end
 
 function Alien:changeAnimation(animationInfo)
     self.animation = Animation(animationInfo)
+    if self.orientationX < 0 then
+        self:switchColors()
+    end
     self.orientationX = 1
 end
 
