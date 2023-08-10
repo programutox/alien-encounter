@@ -12,7 +12,7 @@ local function getRandomOrientation()
     end
 end
 
-function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, round)
+function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, wearAccessories)
     self.colors = {}
     self.guiColors = {}
     for j, color in ipairs(criminalColors) do
@@ -39,7 +39,7 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
 
     self.accessories = Accessories()
 
-    if round >= 10 then
+    if wearAccessories then
         self.accessories:add("monocle", false)
         self.accessories:add("helmet", false)
         self.accessories:add("shoes", true)
@@ -55,18 +55,18 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
     self.speed = speed
 end
 
-function NewBigAlien(i, criminalColors, moving, round)
+function NewBigAlien(i, criminalColors, moving, wearAccessories)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
     local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset)
     local rect = Rectangle(x, y, Consts.alien.width, Consts.alien.height)
-    return Alien(i, criminalColors, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.alien.scale, Consts.alien.speed, round)
+    return Alien(i, criminalColors, moving, rect, Consts.gui.alienX, Consts.gui.alienY, Consts.alien.scale, Consts.alien.speed, wearAccessories)
 end
 
-function NewLittleAlien(i, criminalColors, moving, round)
+function NewLittleAlien(i, criminalColors, moving, wearAccessories)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset) + Consts.littleAlienOffsetX
     local y = Consts.offset + math.floor((i - 1) / Consts.alien.perColumns) * (Consts.alien.height + Consts.offset) + Consts.littleAlienOffsetY
     local rect = Rectangle(x, y, Consts.littleAlien.width, Consts.littleAlien.height)
-    return Alien(i, criminalColors, moving, rect, Consts.gui.littleAlienX, Consts.gui.littleAlienY, Consts.littleAlien.scale, Consts.littleAlien.speed, round)
+    return Alien(i, criminalColors, moving, rect, Consts.gui.littleAlienX, Consts.gui.littleAlienY, Consts.littleAlien.scale, Consts.littleAlien.speed, wearAccessories)
 end
 
 local function pointInRect(x, y, rect)

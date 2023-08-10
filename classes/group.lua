@@ -20,17 +20,17 @@ local function getRandomRoundType(round, colorsOn)
     return roundTypes[index]
 end
 
-local function newAlien(condition, i, criminalColors, moving, round)
+local function newAlien(condition, i, criminalColors, moving, wearAccessories)
     if condition then
-        return NewBigAlien(i, criminalColors, moving, round)
+        return NewBigAlien(i, criminalColors, moving, wearAccessories)
     else
-        return NewLittleAlien(i, criminalColors, moving, round)
+        return NewLittleAlien(i, criminalColors, moving, wearAccessories)
     end
 end
 
 function Group:createNormalRound()
     for i=1, Consts.alien.headcount do
-        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round >= 15)
         while i ~= self.criminalId and alien.colors[1]:equals(self.criminalColors[1]) do
             alien.colors[1] = RandomColor()
         end
@@ -44,7 +44,7 @@ function Group:createSizeRound()
     for i=1, Consts.alien.headcount do
         local isCriminal = i == self.criminalId
         -- This condition is equivalent to (is_criminal && is_criminal_little) || (!is_criminal && !is_criminal_little)
-        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColors, self.moving, self.round)
+        local alien = newAlien(isCriminal == isCriminalLittle, i, self.criminalColors, self.moving, self.round >= 15 and math.random(1, 2) == 1)
         alien:adaptAccessories(alien.colors[1])
         table.insert(self.aliens, alien)
     end
@@ -52,7 +52,7 @@ end
 
 function Group:createAccessoryRound()
     local isCriminalLittle = math.random(1, 4) == 1
-    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColors, self.moving, self.round)
+    local criminal = newAlien(isCriminalLittle, self.criminalId, self.criminalColors, self.moving, true)
     criminal.accessories:createAtLeastOneAccessory()
 
     for i=1, Consts.alien.headcount do
@@ -61,7 +61,7 @@ function Group:createAccessoryRound()
             goto continue
         end
 
-        local alien = newAlien(isCriminalLittle, i, self.criminalColors, self.moving, self.round)
+        local alien = newAlien(isCriminalLittle, i, self.criminalColors, self.moving, false)
         alien.accessories = CreateVariantAccessories(criminal.accessories, alien.colors[1])
         table.insert(self.aliens, alien)
         ::continue::
@@ -91,7 +91,7 @@ function Group:createBicolorRound()
     until not self.criminalColors[2]:equals(self.criminalColors[1])
 
     for i=1, Consts.alien.headcount do
-        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, math.random(1, 2) == 1)
         if i ~= self.criminalId then
             alien:switchColors()
         end
