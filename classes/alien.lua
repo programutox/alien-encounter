@@ -34,7 +34,7 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
         -- No need to reverse the animation
         -- Even when flipped, it will be drawn in the correct order, but the origin becomes top right
         rect.x = rect:right()
-        self:switchColors()
+        self:switchDrawColors()
     end
 
     self.accessories = Accessories()
@@ -99,6 +99,11 @@ function Alien:isDeathAnimationOver()
 end
 
 function Alien:switchColors()
+    self.colors[1], self.colors[2] = self.colors[2], self.colors[1]
+    self.guiColors[1], self.guiColors[2] = self.guiColors[2], self.guiColors[1]
+end
+
+function Alien:switchDrawColors()
     if #self.colors == 2 then
         self.colors[1], self.colors[2] = self.colors[2], self.colors[1]
     end
@@ -112,7 +117,7 @@ end
 function Alien:changeAnimation(animationInfo)
     self.animation = Animation(animationInfo)
     if self.orientationX < 0 then
-        self:switchColors()
+        self:switchDrawColors()
     end
     self.orientationX = 1
 end
@@ -128,11 +133,11 @@ function Alien:updateMovement(dt)
     if self.rect.x < 0 then
         self.rect.x = 0
         self.orientationX = -self.orientationX
-        self:switchColors()
+        self:switchDrawColors()
     elseif self.rect.x > Consts.screenWidth - self.rect.width then
         self.rect.x = Consts.screenWidth - self.rect.width
         self.orientationX = -self.orientationX
-        self:switchColors()
+        self:switchDrawColors()
     end
 
     if self.rect.y < 0 then

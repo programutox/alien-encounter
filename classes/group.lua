@@ -12,7 +12,7 @@ local function getRandomRoundType(round, colorsOn)
     -- end
     -- local index = math.random(1, #roundTypes)
     -- return roundTypes[index]
-    return "randomBicolor"
+    return "bicolor"
 end
 
 local function newAlien(condition, i, criminalColors, moving, round)
@@ -80,6 +80,24 @@ function Group:createRandomBicolorRound()
     end
 end
 
+function Group:createBicolorRound()
+    -- It is way too hard otherwise
+    self.moving = false
+
+    repeat
+        self.criminalColors[2] = RandomColor()
+    until not self.criminalColors[2]:equals(self.criminalColors[1])
+
+    for i=1, Consts.alien.headcount do
+        local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
+        if i ~= self.criminalId then
+            alien:switchColors()
+        end
+        alien:adaptAccessories(alien.colors[1])
+        table.insert(self.aliens, alien)
+    end
+end
+
 function Group:new(round, highscore, font, colorsOn)
     self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
     self.highscore = highscore
@@ -106,6 +124,8 @@ function Group:new(round, highscore, font, colorsOn)
         self:createChangingColorRound()
     elseif roundType == "randomBicolor" then
         self:createRandomBicolorRound()
+    elseif roundType == "bicolor" then
+        self:createBicolorRound()
     else
         error("Got unexpected roundType: " .. roundType, 2)
     end
