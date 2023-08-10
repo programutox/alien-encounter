@@ -3,15 +3,16 @@ require("classes.alien")
 Group = Object:extend()
 
 local function getRandomRoundType(round, colorsOn)
-    local roundTypes = { "normal", "size" }
-    if round >= 15 then
-        table.insert(roundTypes, "accessory")
-    end
-    if colorsOn and round >= 30 then
-        table.insert(roundTypes, "changingColor")
-    end
-    local index = math.random(1, #roundTypes)
-    return roundTypes[index]
+    -- local roundTypes = { "normal", "size" }
+    -- if round >= 15 then
+    --     table.insert(roundTypes, "accessory")
+    -- end
+    -- if colorsOn and round >= 30 then
+    --     table.insert(roundTypes, "changingColor")
+    -- end
+    -- local index = math.random(1, #roundTypes)
+    -- return roundTypes[index]
+    return "bicolor"
 end
 
 local function newAlien(condition, i, criminalColors, moving, round)
@@ -71,7 +72,7 @@ function Group:createBicolorRound()
     table.insert(self.criminalColors, RandomColor())
     for i=1, Consts.alien.headcount do
         local alien = newAlien(math.random(1, 4) == 1, i, self.criminalColors, self.moving, self.round)
-        while i ~= self.criminalId and alien.colors[1]:equals(self.criminalColors[1]) and alien.colors[2]:equals(self.criminalColors[2]) do
+        while i ~= self.criminalId and (alien:hasSameColors(self.criminalColors) or alien:isUnicolor()) do
             alien.colors = { RandomColor(), RandomColor() }
         end
         alien:adaptAccessories(alien.colors[1])
@@ -103,8 +104,10 @@ function Group:new(round, highscore, font, colorsOn)
         self:createAccessoryRound()
     elseif roundType == "changingColor" then
         self:createChangingColorRound()
+    elseif roundType == "bicolor" then
+        self:createBicolorRound()
     else
-        error("Got unexpected roundType", 2)
+        error("Got unexpected roundType: " .. roundType, 2)
     end
 end
 

@@ -44,10 +44,12 @@ function Alien:new(i, criminalColors, moving, rect, guiX, guiY, scale, speed, ro
     self.orientationY = orientationY
     self.scale = scale
     self.colors = { criminalColors[1] }
+    if #criminalColors == 2 then
+        table.insert(self.colors, criminalColors[2])
+    end
     self.rect = rect
     self.speed = speed
 end
-
 
 function NewBigAlien(i, criminalColors, moving, round)
     local x = Consts.offset + ((i - 1) % Consts.alien.perRows) * (Consts.alien.width + Consts.offset)
@@ -70,6 +72,14 @@ end
 function Alien:isHovered()
     local x, y = love.mouse.getPosition()
     return pointInRect(x, y, self.rect)
+end
+
+function Alien:isUnicolor()
+    return self.colors[1]:equals(self.colors[2])
+end
+
+function Alien:hasSameColors(colors)
+    return self.colors[1]:equals(colors[1]) and self.colors[2]:equals(colors[2])
 end
 
 function Alien:getGuiRect()
@@ -129,10 +139,16 @@ function Alien:draw(images)
     end
     local quad = self:getCurrentQuad()
     love.graphics.setColor(self.colors[1]:toRgba())
-    love.graphics.draw(images.alien, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+    if #self.colors == 1 then
+        love.graphics.draw(images.alien, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+    else
+        love.graphics.draw(images.alienLeft, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+        love.graphics.setColor(self.colors[2]:toRgba())
+        love.graphics.draw(images.alienRight, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
+    end
     love.graphics.setColor(Colors.white:toRgba())
 
-    if self.colors[1]:equals(Colors.black) then
+    if self.colors[1]:equals(Colors.black) or self.colors[2] and self.colors[2]:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, self.rect.x + offsetX, self.rect.y, 0, self.orientationX * self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())
@@ -146,10 +162,16 @@ function Alien:drawGui(images)
     local quad = Consts.animationInfo.idle.startRect:toQuad(Consts.alien.imageWidth, Consts.alien.imageHeight)
 
     love.graphics.setColor(self.colors[1]:toRgba())
-    love.graphics.draw(images.alien, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
+    if #self.colors == 1 then
+        love.graphics.draw(images.alien, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
+    else
+        love.graphics.draw(images.alienLeft, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
+        love.graphics.setColor(self.colors[2]:toRgba())
+        love.graphics.draw(images.alienRight, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
+    end
     love.graphics.setColor(Colors.white:toRgba())
 
-    if self.colors[1]:equals(Colors.black) then
+    if self.colors[1]:equals(Colors.black) or self.colors[2] and self.colors[2]:equals(Colors.black) then
         love.graphics.setColor(Colors.gray:toRgba())
         love.graphics.draw(images.eye, quad, destRect.x, destRect.y, 0, self.scale, self.scale)
         love.graphics.setColor(Colors.white:toRgba())
