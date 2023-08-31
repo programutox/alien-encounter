@@ -1,7 +1,7 @@
 Color = Object:extend()
 
 function RandomColor()
-    local index = math.random(1, #Consts.colors)
+    local index = love.math.random(1, #Consts.colors)
     local result = Consts.colors[index]
     return result
 end

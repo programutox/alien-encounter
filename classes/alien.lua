@@ -5,7 +5,7 @@ require("classes.accessories")
 Alien = Object:extend()
 
 local function getRandomOrientation()
-    if math.random(0, 1) == 0 then
+    if love.math.random(0, 1) == 0 then
         return 1
     else
         return -1

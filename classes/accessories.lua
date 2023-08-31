@@ -10,7 +10,7 @@ function AccessoryColor:equals(other)
 end
 
 local function newOptionalColor()
-    if math.random(1, 3) == 1 then
+    if love.math.random(1, 3) == 1 then
         return RandomColor()
     else
         return nil
@@ -62,7 +62,7 @@ local function nthKey(map, n)
 end
 
 function Accessories:createAtLeastOneAccessory()
-    local index = math.random(1, mapLength(self.colors))
+    local index = love.math.random(1, mapLength(self.colors))
     local key = nthKey(self.colors, index)
     if not key then
         error("Tried to get a key map from an invalid index", 2)

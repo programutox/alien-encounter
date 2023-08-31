@@ -90,7 +90,6 @@ local function resetLives()
 end
 
 function love.load()
-    math.randomseed(os.time())
     love.mouse.setVisible(false)
 
     loadHighscore()
