@@ -21,10 +21,13 @@ function Button:toggle()
 end
 
 function Button:updateIfClicked(func)
-    if self:isHovered() then
-        self:toggle()
-        func()
+    if not self:isHovered() then
+        return false
     end
+
+    self:toggle()
+    func()
+    return true
 end
 
 function Button:draw(imageOn, imageOff)

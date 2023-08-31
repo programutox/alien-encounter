@@ -99,7 +99,7 @@ function love.load()
 
     texts.lostTitle = love.graphics.newText(bigFont, "You lost!")
     texts.lostScore = love.graphics.newText(Font)
-    texts.sub = love.graphics.newText(Font, "Press [space] to start")
+    texts.sub = love.graphics.newText(Font, "Click to start")
 
     music = love.audio.newSource("assets/mus/alien_swamp.ogg", "stream")
     music:setLooping(true)
@@ -108,9 +108,27 @@ function love.load()
     loadSounds()
 end
 
+local function launchGame()
+    state = "game"
+    resetLives()
+    group = Group(0, highscore, Font, buttons.colors.on)
+    clock:restart()
+    playSound(sounds.start)
+    if buttons.music.on then
+        music:play()
+    end
+end
+
 local function menuMousePressed()
+    local buttonClicked = false
     for _, b in pairs(buttons) do
-        b:updateIfClicked(playPressSound)
+        if b:updateIfClicked(playPressSound) then
+            buttonClicked = true
+        end
+    end
+
+    if not buttonClicked then
+        launchGame()
     end
 end
 
@@ -171,17 +189,8 @@ function love.mousepressed(_, _, button, _, _)
         menuMousePressed()
     elseif state == "game" then
         gameMousePressed()
-    end
-end
-
-local function launchGame()
-    state = "game"
-    resetLives()
-    group = Group(0, highscore, Font, buttons.colors.on)
-    clock:restart()
-    playSound(sounds.start)
-    if buttons.music.on then
-        music:play()
+    elseif state == "lost" then
+        launchGame()
     end
 end
 
@@ -208,9 +217,7 @@ end
 
 function love.keypressed(key)
     if state == "menu" then
-        if key == "space" then
-            launchGame()
-        elseif key == "escape" then
+        if key == "escape" then
             love.event.quit()
         end
     elseif state == "game" then
@@ -222,9 +229,7 @@ function love.keypressed(key)
             end
         end
     elseif state == "lost" then
-        if key == "space" then
-            launchGame()
-        elseif key == "escape" then
+        if key == "escape" then
             love.event.quit()
         end
     end
