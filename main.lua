@@ -113,7 +113,7 @@ end
 local function launchGame()
     state = "game"
     resetLives()
-    group = Group(0, highscore, Font, buttons.colors.on)
+    group = Group(0, highscore, Font, buttons.colors.on, onWeb)
     clock:restart()
     playSound(sounds.start)
     if buttons.music.on then
@@ -250,14 +250,14 @@ function love.update(dt)
             heartsQuad[lives] = love.graphics.newQuad(Consts.heartSize, 0, Consts.heartSize, Consts.heartSize, images.heart)
             playSound(sounds.heal)
         end
-        group:reset(true)
+        group:reset(true, onWeb)
         criminalShot = false
         clock:restart()
     end
 
     if not criminalShot and clock:elapsedSeconds() > Consts.roundDuration then
         loseLife()
-        group:reset(false)
+        group:reset(false, onWeb)
         clock:restart()
         playSound(sounds.lost)
     end

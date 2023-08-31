@@ -98,7 +98,7 @@ function Group:createBicolorRound()
     end
 end
 
-function Group:new(round, highscore, font, colorsOn)
+function Group:new(round, highscore, font, colorsOn, onWeb)
     self.scoreText = love.graphics.newText(font, string.format("%02d/%02d", round, highscore))
     self.highscore = highscore
     self.font = font
@@ -107,7 +107,7 @@ function Group:new(round, highscore, font, colorsOn)
     self.criminalColors = { RandomColor() }
     self.criminalId = love.math.random(1, Consts.alien.headcount)
     self.moving = self.round % 10 >= 5
-    self.limitedRange = not self.moving and self.round > 10 and love.math.random(1, 5) == 1
+    self.limitedRange = not onWeb and not self.moving and self.round > 10 and love.math.random(1, 5) == 1
     self.clock = nil
     self.aliens = {}
     self.colorsOn = colorsOn
@@ -131,11 +131,11 @@ function Group:new(round, highscore, font, colorsOn)
     end
 end
 
-function Group:reset(addRound)
+function Group:reset(addRound, onWeb)
     if addRound then
-        self:new(self.round + 1, self.highscore, self.font, self.colorsOn)
+        self:new(self.round + 1, self.highscore, self.font, self.colorsOn, onWeb)
     else
-        self:new(self.round, self.highscore, self.font, self.colorsOn)
+        self:new(self.round, self.highscore, self.font, self.colorsOn, onWeb)
     end
 end
 
