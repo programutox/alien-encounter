@@ -58,13 +58,11 @@ function Group:createAccessoryRound()
     for i=1, Consts.alien.headcount do
         if i == self.criminalId then
             table.insert(self.aliens, criminal)
-            goto continue
+        else
+          local alien = newAlien(isCriminalLittle, i, self.criminalColors, self.moving, false)
+          alien.accessories = CreateVariantAccessories(criminal.accessories, alien.colors[1])
+          table.insert(self.aliens, alien)
         end
-
-        local alien = newAlien(isCriminalLittle, i, self.criminalColors, self.moving, false)
-        alien.accessories = CreateVariantAccessories(criminal.accessories, alien.colors[1])
-        table.insert(self.aliens, alien)
-        ::continue::
     end
 end
 
@@ -190,14 +188,12 @@ function Group:update(dt, criminalShot)
         if i == self.criminalId then
             alien:changeSolidColor(self.criminalColors[1])
             alien:adaptAccessories(alien.colors[1])
-            goto continue
+        else
+          repeat
+              alien:changeSolidColor(RandomColor())
+          until not alien.colors[1]:equals(self.criminalColors[1])
+          alien:adaptAccessories(alien.colors[1])
         end
-
-        repeat
-            alien:changeSolidColor(RandomColor())
-        until not alien.colors[1]:equals(self.criminalColors[1])
-        alien:adaptAccessories(alien.colors[1])
-        ::continue::
     end
     self.clock:restart()
 end

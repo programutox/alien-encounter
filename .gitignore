@@ -1,1 +1,4 @@
 /.vscode
+*.love
+.luarc.json
+/output

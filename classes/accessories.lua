@@ -81,15 +81,12 @@ end
 
 function Accessories:adapt(alienColor)
     for _, accessoryColor in pairs(self.colors) do
-        if not accessoryColor.optionalColor then
-            goto continue
+        if accessoryColor.optionalColor then
+            while accessoryColor.optionalColor:equals(alienColor) do
+                accessoryColor.optionalColor = RandomColor()
+            end
+            accessoryColor.optionalColor = accessoryColor.optionalColor
         end
-
-        while accessoryColor.optionalColor:equals(alienColor) do
-            accessoryColor.optionalColor = RandomColor()
-        end
-        accessoryColor.optionalColor = accessoryColor.optionalColor
-        ::continue::
     end
 end
 
