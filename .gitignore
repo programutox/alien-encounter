@@ -2,3 +2,4 @@
 *.love
 .luarc.json
 /output
+*.zip
