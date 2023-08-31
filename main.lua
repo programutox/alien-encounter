@@ -216,22 +216,14 @@ local function launchLost()
 end
 
 function love.keypressed(key)
-    if state == "menu" then
-        if key == "escape" then
-            love.event.quit()
-        end
-    elseif state == "game" then
-        if key == "escape" then
-            state = "menu"
-            group = nil
-            if buttons.music.on then
-                music:stop()
-            end
-        end
-    elseif state == "lost" then
-        if key == "escape" then
-            love.event.quit()
-        end
+    if state ~= "game" or key ~= "escape" then
+        return
+    end
+
+    state = "menu"
+    group = nil
+    if buttons.music.on then
+        music:stop()
     end
 end
 
