@@ -6,6 +6,7 @@ local images = {}
 local sounds = {}
 local texts = {}
 local music
+local onWeb
 
 local state = "menu"
 local targetX, targetY = 0, 0
@@ -90,7 +91,8 @@ local function resetLives()
 end
 
 function love.load()
-    love.mouse.setVisible(false)
+    onWeb = love.system.getOS() == "Web"
+    love.mouse.setVisible(onWeb)
 
     loadHighscore()
 
@@ -161,6 +163,7 @@ local function gameMousePressed()
     if not isCriminalClicked and #innocentAliensId > 0 then
         group:triggerDeaths()
         if lives - 1 > 0 then
+            targetX, targetY = love.mouse.getPosition()
             explosionX = targetX - Consts.explosionSize / 2
             explosionY = targetY - Consts.explosionSize / 2
             explosionAnimation:restart()
@@ -174,6 +177,7 @@ local function gameMousePressed()
     group:triggerCriminalDeath()
     timeBarWidth = (1 - clock:elapsedSeconds() / Consts.roundDuration) * Consts.screenWidth
     clock:restart()
+    targetX, targetY = love.mouse.getPosition()
     explosionX = targetX - Consts.explosionSize / 2
     explosionY = targetY - Consts.explosionSize / 2
     explosionAnimation:restart()
@@ -216,19 +220,26 @@ local function launchLost()
 end
 
 function love.keypressed(key)
-    if state ~= "game" or key ~= "escape" then
+    if key ~= "escape" then
         return
     end
 
-    state = "menu"
-    group = nil
-    if buttons.music.on then
-        music:stop()
+    if (state == "menu" or state == "lost") and not onWeb then
+        love.event.quit()
+    elseif state == "game" then
+        state = "menu"
+        group = nil
+        if buttons.music.on then
+            music:stop()
+        end
     end
 end
 
 function love.update(dt)
-    targetX, targetY = love.mouse.getPosition()
+    if not onWeb then
+        targetX, targetY = love.mouse.getPosition()
+    end
+
     if state ~= "game" then
         return
     end
@@ -325,6 +336,10 @@ function love.draw()
         drawGame()
     elseif state == "lost" then
         drawLost()
+    end
+
+    if onWeb then
+        return
     end
 
     if canShoot then
